@@ -12,3 +12,4 @@ Route::get('/', function () {
 use App\Http\Controllers\Auth\RegisterController;
 
 Route::post('/register', [RegisterController::class, 'store']);
+#prueba
