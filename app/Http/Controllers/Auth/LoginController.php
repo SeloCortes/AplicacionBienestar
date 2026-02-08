@@ -25,9 +25,12 @@ class LoginController extends Controller
         }
 
         return response()->json([
+            redirect('/cursos'),
             'message' => 'Inicio de sesión exitoso',
             'user_id' => $user->id,
             'nombre' => $user->nombre_apellido,
         ]);
     }
 }
+
+

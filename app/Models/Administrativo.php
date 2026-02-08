@@ -16,7 +16,7 @@ class Administrativo extends Model
         'rol',
     ];
 
-    public function usuario(){
-        return $this->belongsTo(User::class);
+    public function user(){
+        return $this->belongsTo(User::class, 'usuario_id');
     }
 }
