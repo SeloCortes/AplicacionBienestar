@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -19,16 +20,17 @@ class LoginController extends Controller
         $user = User::where('identificacion', $request->identificacion)->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'message' => 'Credenciales incorrectas'
-            ], 401);
+            return redirect()->route('login')->withErrors(['identificacion' => 'Credenciales incorrectas'])
+                ->withInput($request->only('identificacion'));
         }
 
-        return response()->json([
-            redirect('/cursos'),
-            'message' => 'Inicio de sesión exitoso',
-            'user_id' => $user->id,
-            'nombre' => $user->nombre_apellido,
-        ]);
+        Auth::login($user, $remember = true);
+
+        return redirect()->intended('/cursos')->with('message', 'Inicio de sesión exitoso');
+    }
+
+    public function showLoginForm()
+    {
+        return view('auth.login');
     }
 }
