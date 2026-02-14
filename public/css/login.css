@@ -1,8 +1,8 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-    --primary: #3d8b7a;
-    --primary-hover: #357a6b;
+    --primary: #0c1381;
+    --primary-hover: #0c1381;
     --primary-foreground: #ffffff;
     --foreground: #1f2e2b;
     --muted: #6b7f7a;
