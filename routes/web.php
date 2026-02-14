@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 
@@ -15,6 +15,9 @@ Route::post('/register', [RegisterController::class, 'store']);
 
 use App\Http\Controllers\Auth\LoginController;
 Route::post('/login', [LoginController::class, 'login']);
+Route::get('/login', function () {
+    return view('auth.login');
+})->name('login');
 
 use App\Http\Controllers\CursosController;
 //Rutas para estudiantes y terceros
@@ -49,4 +52,3 @@ Route::middleware(['admin'])->group(function () {
     Route::put('/admin/horarios/{id}', [HorariosAdminController::class,'update']);
     Route::delete('/admin/horarios/{id}', [HorariosAdminController::class,'destroy']);
 });
-
