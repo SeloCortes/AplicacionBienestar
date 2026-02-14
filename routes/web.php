@@ -10,33 +10,29 @@ Route::get('/', function () {
 
 
 use App\Http\Controllers\Auth\RegisterController;
-
+//Ruta para registro de usuarios
 Route::post('/register', [RegisterController::class, 'store']);
-
+//Ruta para login de usuarios
 use App\Http\Controllers\Auth\LoginController;
 Route::post('/login', [LoginController::class, 'login']);
 
+
+//Rutas para ver lista de cursos y horarios.
 use App\Http\Controllers\CursosController;
-//Rutas para estudiantes y terceros
 Route::get('/cursos', [CursosController::class, 'index']);
 Route::get('/cursos/{id}/horarios', [CursosController::class,'horarios']);
 
 
-
-
+//Rutas para inscripciones de estudiantes y terceros.
 use App\Http\Controllers\InscripcionController;
-//Ruta para estudiantes
 Route::post('/inscripcion', [InscripcionController::class,'store'])->middleware('estudiante');
-//Ruta para terceros
 Route::post('/inscripcion/tercero', [InscripcionController::class,'store'])->middleware('tercero');
-
 Route::delete('/inscripcion/{id}', [InscripcionController::class,'destroy'])->middleware(['estudiante', 'tercero']);
 
 
+//Rutas para administradores
 use App\Http\Controllers\Admin\CursosAdminController;
 use App\Http\Controllers\Admin\HorariosAdminController;
-
-//Rutas para administradores
 Route::middleware(['admin'])->group(function () {
 
     //cursos 

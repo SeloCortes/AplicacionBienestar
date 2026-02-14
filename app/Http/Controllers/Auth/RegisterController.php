@@ -13,8 +13,19 @@ class RegisterController extends Controller
     //
 
 
-    
+
     public function store(RegisterUserRequest $request){
+
+        $request->validate([
+            'nombre_apellido' => 'required|string|max:255',
+            'identificacion'  => 'required|integer|max:20|unique:User,identificacion',
+            'correo'          => 'required|string|email|max:255|unique:User,correo',
+            'password'        => 'required|string|min:8|confirmed',
+            'telefono'        => 'nullable|integer|max:10',
+            'genero'          => 'nullable|string|max:20',
+            'etnia'           => 'nullable|string|max:50',
+            'discapacidad'    => 'nullable|string|max:255',
+        ]);
 
         $user = User::create([
             'nombre_apellido' => $request->nombre_apellido,
