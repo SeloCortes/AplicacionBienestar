@@ -18,12 +18,8 @@ class CursosController extends Controller
 
         $cursos = $query->with('horarios')->get();
 
-        // Si el cliente solicita JSON (AJAX / API), devolver datos JSON
-        if ($request->wantsJson() || $request->ajax()) {
-            return response()->json($cursos);
-        }
+        return response()->view('cursos.student', compact('cursos'));
 
-        return response()->view('cursos.cursos', compact('cursos'));
     }
 
     public function horarios($cursoId)

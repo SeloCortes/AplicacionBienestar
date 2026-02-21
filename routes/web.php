@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('cursos.cursos');
+    return view('welcome');
 });
 
 use App\Http\Controllers\Auth\RegisterController;
