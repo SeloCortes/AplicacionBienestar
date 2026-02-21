@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\RegisterController;
 
 // Ruta para registro de usuarios
 Route::post('/register', [RegisterController::class, 'store']);
+
 // Rutas para login de usuarios: GET muestra el formulario, POST procesa credenciales
 use App\Http\Controllers\Auth\LoginController;
 
@@ -27,18 +28,15 @@ use App\Http\Controllers\InscripcionController;
 Route::middleware(['auth'])->group(function () {
 
     // Rutas para ver lista de cursos y horarios.
-
     Route::get('/cursos', [CursosController::class, 'index'])->name('cursos.index');
     Route::get('/cursos/{id}/horarios', [CursosController::class, 'horarios']);
 
     // Rutas para inscripciones de estudiantes y terceros.
-
     Route::post('/inscripcion', [InscripcionController::class, 'store'])->middleware('estudiante');
     Route::post('/inscripcion/tercero', [InscripcionController::class, 'store'])->middleware('tercero');
     Route::delete('/inscripcion/{id}', [InscripcionController::class, 'destroy'])->middleware(['estudiante', 'tercero']);
 
     // Rutas para administradores
-
     Route::middleware(['admin'])->group(function () {
 
         // cursos

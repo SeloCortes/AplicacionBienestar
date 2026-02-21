@@ -3,32 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Models\Curso;
-use Illuminate\Http\Request;
+use App\Models\Horario;
 
 class CursosController extends Controller
 {
-    public function index(Request $request)
+    // Método para mostrar la lista de cursos disponibles
+    public function index()
     {
+        // Query para obtener solo los cursos activos
+        $cursos = Curso::where('estado', true)->get();
 
-        $query = Curso::where('estado', true);
-
-        if ($request->filled('tipo_curso')) {
-            $query->where('tipo_curso', $request->tipo_curso);
-        }
-
-        $cursos = $query->with('horarios')->get();
-
+        // Retornar la vista con la lista de cursos
         return response()->view('cursos.student', compact('cursos'));
-
     }
 
+    // Método para obtener horarios de un curso específico
     public function horarios($cursoId)
     {
-        $horariosCurso = Curso::with(['horarios' => function ($query) {
-            $query->where('estado', true)
-                ->where('cupo_disponible', '>', 0);
-        }])->findOrFail($cursoId);
+        // Query para obtener solo los horarios activos del curso seleccionado (Curso_id)
+        $horariosCurso = Horario::where('curso_id', $cursoId)->where('estado', true)->get();
 
+        // Retornar los horarios en formato JSON
         return response()->json($horariosCurso);
     }
 }
