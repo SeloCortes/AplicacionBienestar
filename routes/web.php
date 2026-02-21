@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Models\Curso;
 
 
 
@@ -22,6 +23,11 @@ Route::post('/login', [LoginController::class, 'login']);
 use App\Http\Controllers\CursosController;
 Route::get('/cursos', [CursosController::class, 'index']);
 Route::get('/cursos/{id}/horarios', [CursosController::class,'horarios']);
+
+Route::get('/cursos-student', function () {
+    $cursos = Curso::where('estado', true)->get();
+    return view('cursos.student', compact('cursos'));
+});
 
 
 //Rutas para inscripciones de estudiantes y terceros.
