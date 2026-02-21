@@ -5,15 +5,16 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
+    // Manejo de inicio de sesión para usuarios recibe post con identificacion y password, valida las credenciales y redirige a la vista de cursos si son correctas, o muestra un error si no lo son.
     public function login(Request $request)
     {
         $request->validate([
-            'identificacion' => 'required|string',
+            'identificacion' => 'required|integer',
             'password' => 'required|string',
         ]);
 
@@ -24,9 +25,11 @@ class LoginController extends Controller
                 ->withInput($request->only('identificacion'));
         }
 
-        Auth::login($user, $remember = true);
+        // Loguear usuario y regenerar sesión para evitar fijación de sesión
+        Auth::login($user);
+        $request->session()->regenerate();
 
-        return redirect()->intended('/cursos')->with('message', 'Inicio de sesión exitoso');
+        return redirect()->intended(route('cursos.index'))->with('message', 'Inicio de sesión exitoso');
     }
 
     public function showLoginForm()
