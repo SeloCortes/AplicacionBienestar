@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('administrador.adminCursos');
 });
 
 use App\Http\Controllers\Auth\RegisterController;
@@ -16,6 +16,7 @@ use App\Http\Controllers\Auth\LoginController;
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // //////////////////////////////////////////////////////////
 
@@ -40,6 +41,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['admin'])->group(function () {
 
         // cursos
+        Route::get('/admin/cursos', [CursosAdminController::class, 'index'])->name('admin.cursos.index');
         Route::post('/admin/cursos', [CursosAdminController::class, 'store']);
         Route::put('/admin/cursos/{id}', [CursosAdminController::class, 'update']);
         Route::delete('/admin/cursos/{id}', [CursosAdminController::class, 'destroy']);

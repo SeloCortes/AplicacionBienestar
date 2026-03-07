@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
@@ -21,25 +21,27 @@ class User extends Authenticatable
         'discapacidad',
     ];
 
+    protected $hidden = ['password'];
 
-    protected $hidden = [ 'contrasena', ];
+    // relaciones
 
-
-    //relaciones
-
-    public function estuadiante(){
-        return $this->hasOne(Estudiante::class);
+    public function estudiante()
+    {
+        return $this->hasOne(Estudiante::class , 'usuario_id');
     }
 
-    public function administrativo(){
-        return $this->hasOne(Administrativo::class);
+    public function administrativo()
+    {
+        return $this->hasOne(Administrativo::class , 'usuario_id');
     }
 
-    public function tercero(){
-        return $this->hasOne(Tercero::class);
+    public function tercero()
+    {
+        return $this->hasOne(Tercero::class , 'usuario_id');
     }
 
-    public function inscripciones(){
+    public function inscripciones()
+    {
         return $this->hasMany(Inscripcion::class);
     }
 }

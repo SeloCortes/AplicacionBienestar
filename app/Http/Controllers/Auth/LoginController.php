@@ -20,16 +20,42 @@ class LoginController extends Controller
 
         $user = User::where('identificacion', $request->identificacion)->first();
 
-        if (! $user || ! Hash::check($request->password, $user->password)) {
-            return redirect()->route('login')->withErrors(['identificacion' => 'Credenciales incorrectas'])
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            $msg = 'Credenciales incorrectas';
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $msg, 'errors' => ['identificacion' => [$msg]]], 401);
+            }
+            return redirect()->route('login')->withErrors(['identificacion' => $msg])
                 ->withInput($request->only('identificacion'));
         }
 
-        // Loguear usuario y regenerar sesión para evitar fijación de sesión
+        // Autenticar al usuario y regenerar sesión
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->intended(route('cursos.index'))->with('message', 'Inicio de sesión exitoso');
+        // Determinar ruta de redirección
+        $redirectUrl = route('cursos.index');
+        if ($user->administrativo) {
+            $redirectUrl = route('admin.cursos.index');
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Inicio de sesión exitoso',
+                'redirect_url' => $redirectUrl
+            ]);
+        }
+
+        return redirect()->to($redirectUrl)->with('message', 'Inicio de sesión exitoso');
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/login');
     }
 
     public function showLoginForm()

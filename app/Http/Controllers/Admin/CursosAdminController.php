@@ -8,6 +8,15 @@ use Illuminate\Http\Request;
 
 class CursosAdminController extends Controller
 {
+    public function index()
+    {
+        // Query para obtener todos los cursos.
+        $cursos = Curso::all();
+
+        // Retornar la vista con la lista de cursos
+        return view('administrador.adminCursos', compact('cursos'));
+    }
+
     public function store(Request $request)
     {
         $curso = Curso::create($request->all());
@@ -28,7 +37,7 @@ class CursosAdminController extends Controller
         Curso::findOrFail($id)->delete();
 
         return response()->json([
-            'message' => 'Curso eliminado'
+            'message' => 'Curso eliminado',
         ]);
     }
 }

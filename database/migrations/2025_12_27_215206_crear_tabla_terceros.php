@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create("terceros", function (Blueprint $table) {
 
             $table->id();
-            $table->foreignId("usuario_id")->constrained()->cascadeOnDelete();
+            $table->foreignId("usuario_id")->constrained('users')->cascadeOnDelete();
             $table->string("estamento");
             $table->timestamps();
         });

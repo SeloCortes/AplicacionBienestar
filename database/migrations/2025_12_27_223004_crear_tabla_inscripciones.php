@@ -13,10 +13,10 @@ return new class extends Migration
     {
         //
         Schema::create('inscripciones', function (Blueprint $table) {
-        
+
             $table->id();
             $table->foreignId('horario_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('usuario_id')->constrained('users')->cascadeOnDelete();
             $table->timestamp('fecha_inscripcion')->useCurrent();
             $table->enum('tipo_inscripcion', ['estudiante', 'tercero']);
             $table->timestamps();

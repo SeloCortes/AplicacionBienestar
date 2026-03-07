@@ -23,6 +23,12 @@
                     <span class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 font-medium">
                         Estudiante
                     </span>
+                    <form action="{{ route('logout') }}" method="POST" class="inline">
+                        @csrf
+                        <button type="submit" class="text-slate-500 hover:text-slate-800 font-medium transition-colors">
+                            Cerrar sesión
+                        </button>
+                    </form>
                 </div>
             </div>
         </header>

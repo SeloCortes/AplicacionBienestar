@@ -10,15 +10,7 @@ class TerceroMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        $userId = $request->input('user_id');
-
-        if (! $userId) {
-            return response()->json(['message' => 'ID del usuario es necesario'], 401);
-        }
-
-        $user = User::find($userId);
-
-        if (! $user || ! $user->tercero) {
+        if (! auth()->check() || ! auth()->user()->tercero) {
             return response()->json(['message' => 'Acceso denegado, acceso solo a terceros.'], 403);
         }
 
