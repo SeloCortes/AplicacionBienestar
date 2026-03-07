@@ -16,7 +16,7 @@ use App\Http\Controllers\Auth\LoginController;
 
 Route::get('/login', [LoginController::class , 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class , 'login']);
-Route::post('/logout', [LoginController::class , 'logout'])->name('logout');
+Route::post('/logout', [LoginController::class , 'logout'])->name('logout')->middleware('auth');
 
 // //////////////////////////////////////////////////////////
 
@@ -32,26 +32,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/cursos', [CursosController::class , 'index'])->name('cursos.index');
     Route::get('/cursos/{id}/horarios', [CursosController::class , 'horarios']);
 
-    // Ruta para la vista de estudiantes
-    Route::get('/cursos-student', function () {
-            $cursos = \App\Models\Curso::where('estado', true)->get();
-            return view('cursos.student', compact('cursos'));
-        }
-        )->name('cursos.student');
 
-        // Cerrar sesión
-        Route::post('/logout', [LoginController::class , 'logout'])->name('logout');
-        Route::get('/logout', function () {
-            return redirect('/login'); }
-        );
+    // Rutas para inscripciones de estudiantes y terceros.
+    Route::post('/inscripcion', [InscripcionController::class , 'store'])->middleware('estudiante');
+    Route::post('/inscripcion/tercero', [InscripcionController::class , 'store'])->middleware('tercero');
+    Route::delete('/inscripcion/{id}', [InscripcionController::class , 'destroy'])->middleware(['estudiante', 'tercero']);
 
-        // Rutas para inscripciones de estudiantes y terceros.
-        Route::post('/inscripcion', [InscripcionController::class , 'store'])->middleware('estudiante');
-        Route::post('/inscripcion/tercero', [InscripcionController::class , 'store'])->middleware('tercero');
-        Route::delete('/inscripcion/{id}', [InscripcionController::class , 'destroy'])->middleware(['estudiante', 'tercero']);
-
-        // Rutas para administradores
-        Route::middleware(['admin'])->group(function () {
+    // Rutas para administradores
+    Route::middleware(['admin'])->group(function () {
 
             // cursos
             Route::get('/admin/cursos', [CursosAdminController::class , 'index'])->name('admin.cursos.index');
