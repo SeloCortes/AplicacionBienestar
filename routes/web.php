@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 use App\Http\Controllers\Auth\RegisterController;
@@ -30,6 +30,16 @@ Route::middleware(['auth'])->group(function () {
     // Rutas para ver lista de cursos y horarios.
     Route::get('/cursos', [CursosController::class, 'index'])->name('cursos.index');
     Route::get('/cursos/{id}/horarios', [CursosController::class, 'horarios']);
+
+    // Ruta para la vista de estudiantes
+    Route::get('/cursos-student', function () {
+        $cursos = \App\Models\Curso::where('estado', true)->get();
+        return view('cursos.student', compact('cursos'));
+    })->name('cursos.student');
+
+    // Cerrar sesión
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+    Route::get('/logout', function() { return redirect('/login'); });
 
     // Rutas para inscripciones de estudiantes y terceros.
     Route::post('/inscripcion', [InscripcionController::class, 'store'])->middleware('estudiante');

@@ -3,104 +3,223 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#3d8b7a">
     <title>Bienestar USC - Cursos</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ asset('css/student.css') }}">
+    {{-- Google Fonts --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
-<body class="min-h-screen bg-slate-50">
-    <div class="min-h-screen flex flex-col">
-        <header class="border-b border-slate-200 bg-white">
-            <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
-                <div class="flex items-center gap-2">
-                    <div class="h-9 w-9 rounded-lg bg-emerald-600 flex items-center justify-center text-white">
-                        <span class="text-lg font-semibold">B</span>
+<body>
+    <div class="app-layout">
+        {{-- Header --}}
+        <header class="main-header">
+            <div class="header-inner">
+                <a href="{{ url('/cursos') }}" class="logo-link">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                        </svg>
                     </div>
-                    <div>
-                        <p class="text-sm font-semibold text-slate-900">Bienestar USC</p>
-                        <p class="text-xs text-slate-500">Oferta de cursos</p>
+                    <div class="logo-text">
+                        <span class="logo-title">Bienestar USC</span>
+                        <span class="logo-subtitle">Oferta de cursos</span>
                     </div>
-                </div>
-                <div class="flex items-center gap-3 text-xs sm:text-sm">
-                    <span class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 font-medium">
-                        Estudiante
-                    </span>
+                </a>
+
+                <div class="header-actions">
+                    <div class="courses-badge">
+                        <span class="badge-dot"></span>
+                        <span id="totalCursos">{{ $cursos->count() }}</span> cursos
+                    </div>
+                    <div class="user-badge">
+                        <div class="user-avatar">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                        </div>
+                        <span>Estudiante</span>
+                    </div>
+                    <form action="{{ url('/logout') }}" method="POST" class="logout-form">
+                        @csrf
+                        <button type="submit" class="logout-btn" aria-label="Cerrar sesion">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                                <polyline points="16 17 21 12 16 7"/>
+                                <line x1="21" y1="12" x2="9" y2="12"/>
+                            </svg>
+                            <span>Salir</span>
+                        </button>
+                    </form>
                 </div>
             </div>
         </header>
 
-        <main class="flex-1">
-            <section class="max-w-6xl mx-auto px-4 py-8">
-                <div class="max-w-2xl mb-8">
-                    <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900">
-                        Elige tu curso de bienestar
-                    </h1>
-                    <p class="mt-2 text-sm sm:text-base text-slate-600">
-                        Explora los cursos disponibles en Cátedra Santiaguina, Arte y cultura y Deporte formativo.
-                    </p>
+        {{-- Main --}}
+        <main class="main-content">
+            <div class="content-container">
+                {{-- Hero Section --}}
+                <section class="hero-section">
+                    <div class="hero-text">
+                        <h1>Elige tu curso de bienestar</h1>
+                        <p>Explora los cursos disponibles en Deporte formativo, Arte y cultura, y Catedra Santiaguina.</p>
+                    </div>
+                </section>
+
+                {{-- Filter Tabs --}}
+                <div class="filter-tabs" role="tablist">
+                    <button type="button" data-filter="all" class="filter-btn active" role="tab" aria-selected="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7" rx="1"/>
+                            <rect x="14" y="3" width="7" height="7" rx="1"/>
+                            <rect x="3" y="14" width="7" height="7" rx="1"/>
+                            <rect x="14" y="14" width="7" height="7" rx="1"/>
+                        </svg>
+                        <span>Todos</span>
+                        <span class="filter-count">{{ $cursos->count() }}</span>
+                    </button>
+                    <button type="button" data-filter="Deporte formativo" class="filter-btn" role="tab" aria-selected="false">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="m4.93 4.93 4.24 4.24"/>
+                            <path d="m14.83 9.17 4.24-4.24"/>
+                            <path d="m14.83 14.83 4.24 4.24"/>
+                            <path d="m9.17 14.83-4.24 4.24"/>
+                            <circle cx="12" cy="12" r="4"/>
+                        </svg>
+                        <span>Deporte</span>
+                        <span class="filter-count">{{ $cursos->where('tipo_curso', 'Deporte formativo')->count() }}</span>
+                    </button>
+                    <button type="button" data-filter="Arte y cultura" class="filter-btn" role="tab" aria-selected="false">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v4"/>
+                            <path d="m6.8 14-3.5 2"/>
+                            <path d="m20.7 16-3.5-2"/>
+                            <path d="m6.8 10-3.5-2"/>
+                            <path d="m20.7 8-3.5 2"/>
+                            <circle cx="12" cy="12" r="6"/>
+                        </svg>
+                        <span>Arte y Cultura</span>
+                        <span class="filter-count">{{ $cursos->where('tipo_curso', 'Arte y cultura')->count() }}</span>
+                    </button>
+                    <button type="button" data-filter="Catedra Santiaguina" class="filter-btn" role="tab" aria-selected="false">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+                            <path d="M8 7h6"/>
+                            <path d="M8 11h8"/>
+                        </svg>
+                        <span>Catedra</span>
+                        <span class="filter-count">{{ $cursos->where('tipo_curso', 'Catedra Santiaguina')->count() }}</span>
+                    </button>
                 </div>
 
-                @php
-                    $grupos = [
-                        'Cátedra Santiaguina' => 'Catedra Santiaguina',
-                        'Arte y cultura' => 'Arte y cultura',
-                        'Deporte formativo' => 'Deporte formativo',
-                    ];
-                @endphp
+                {{-- Course Sections --}}
+                <div id="courseSections" class="sections-container">
+                    @php
+                        $grupos = [
+                            'Deporte formativo' => ['color' => 'emerald', 'icon' => 'sport'],
+                            'Arte y cultura' => ['color' => 'amber', 'icon' => 'art'],
+                            'Catedra Santiaguina' => ['color' => 'sky', 'icon' => 'book'],
+                        ];
+                    @endphp
 
-                <div class="space-y-10">
-                    @foreach ($grupos as $titulo => $clave)
+                    @foreach ($grupos as $categoria => $config)
                         @php
-                            $cursosGrupo = $cursos->where('tipo_curso', $clave);
+                            $cursosGrupo = $cursos->where('tipo_curso', $categoria);
                         @endphp
 
                         @if ($cursosGrupo->isNotEmpty())
-                            <section>
-                                <header class="flex items-center justify-between mb-4">
-                                    <div class="flex items-baseline gap-2">
-                                        <h2 class="text-lg sm:text-xl font-semibold text-slate-900">
-                                            {{ $titulo }}
-                                        </h2>
-                                        <span class="text-xs sm:text-sm text-slate-500">
-                                            {{ $cursosGrupo->count() }} curso{{ $cursosGrupo->count() === 1 ? '' : 's' }}
-                                        </span>
+                            <section class="course-section" data-category="{{ $categoria }}">
+                                <header class="section-header">
+                                    <div class="section-icon section-icon--{{ $config['color'] }}">
+                                        @if ($config['icon'] === 'sport')
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <circle cx="12" cy="12" r="10"/>
+                                                <path d="m4.93 4.93 4.24 4.24"/>
+                                                <path d="m14.83 9.17 4.24-4.24"/>
+                                                <path d="m14.83 14.83 4.24 4.24"/>
+                                                <path d="m9.17 14.83-4.24 4.24"/>
+                                                <circle cx="12" cy="12" r="4"/>
+                                            </svg>
+                                        @elseif ($config['icon'] === 'art')
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/>
+                                                <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/>
+                                                <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/>
+                                                <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/>
+                                                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z"/>
+                                            </svg>
+                                        @else
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+                                                <path d="M8 7h6"/>
+                                                <path d="M8 11h8"/>
+                                            </svg>
+                                        @endif
+                                    </div>
+                                    <div class="section-title-group">
+                                        <h2 class="section-title">{{ $categoria }}</h2>
+                                        <span class="section-count">{{ $cursosGrupo->count() }} curso{{ $cursosGrupo->count() !== 1 ? 's' : '' }}</span>
                                     </div>
                                 </header>
 
-                                <div class="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                                <div class="courses-grid">
                                     @foreach ($cursosGrupo as $curso)
-                                        <article class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden flex flex-col hover:shadow-md transition-shadow">
-                                            @if ($curso->imagen)
-                                                <div class="h-40 bg-slate-100 overflow-hidden">
-                                                    <img
-                                                        src="{{ asset($curso->imagen) }}"
-                                                        alt="{{ $curso->nombre }}"
-                                                        class="w-full h-full object-cover"
-                                                    >
-                                                </div>
-                                            @endif
-
-                                            <div class="p-4 sm:p-5 flex-1 flex flex-col">
-                                                <div class="flex items-start justify-between gap-3 mb-2">
-                                                    <h3 class="text-sm sm:text-base font-semibold text-slate-900">
-                                                        {{ $curso->nombre }}
-                                                    </h3>
-                                                    <span class="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] sm:text-xs font-medium text-emerald-700">
-                                                        {{ $curso->tipo_curso }}
-                                                    </span>
-                                                </div>
-
-                                                @if ($curso->descripcion)
-                                                    <p class="text-xs sm:text-sm text-slate-600 mb-4 line-clamp-3">
-                                                        {{ $curso->descripcion }}
-                                                    </p>
+                                        <article class="course-card" data-category="{{ $categoria }}">
+                                            <div class="card-image card-image--{{ $config['color'] }}">
+                                                @if ($curso->imagen)
+                                                    <img src="{{ asset($curso->imagen) }}" alt="{{ $curso->nombre }}" loading="lazy">
+                                                @else
+                                                    <div class="card-placeholder">
+                                                        @if ($config['icon'] === 'sport')
+                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                                <circle cx="12" cy="12" r="10"/>
+                                                                <path d="m4.93 4.93 4.24 4.24"/>
+                                                                <path d="m14.83 9.17 4.24-4.24"/>
+                                                                <path d="m14.83 14.83 4.24 4.24"/>
+                                                                <path d="m9.17 14.83-4.24 4.24"/>
+                                                                <circle cx="12" cy="12" r="4"/>
+                                                            </svg>
+                                                        @elseif ($config['icon'] === 'art')
+                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                                <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/>
+                                                                <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/>
+                                                                <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/>
+                                                                <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/>
+                                                                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z"/>
+                                                            </svg>
+                                                        @else
+                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+                                                                <path d="M8 7h6"/>
+                                                                <path d="M8 11h8"/>
+                                                            </svg>
+                                                        @endif
+                                                    </div>
                                                 @endif
-
-                                                <div class="mt-auto pt-2 flex items-center justify-between">
-                                                    <button
-                                                        type="button"
-                                                        class="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs sm:text-sm font-medium text-slate-800 hover:bg-slate-50"
-                                                        disabled
-                                                    >
-                                                        Ver horarios pronto
+                                                <span class="card-badge card-badge--{{ $config['color'] }}">{{ $categoria }}</span>
+                                            </div>
+                                            <div class="card-body">
+                                                <h3 class="card-title">{{ $curso->nombre }}</h3>
+                                                @if ($curso->descripcion)
+                                                    <p class="card-description">{{ $curso->descripcion }}</p>
+                                                @endif
+                                                <div class="card-actions">
+                                                    <button type="button" class="btn-inscribir" data-curso-id="{{ $curso->id }}">
+                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <path d="M12 5v14"/>
+                                                            <path d="M5 12h14"/>
+                                                        </svg>
+                                                        <span>Inscribirse</span>
+                                                    </button>
+                                                    <button type="button" class="btn-info" data-curso-id="{{ $curso->id }}" aria-label="Ver detalles">
+                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <circle cx="12" cy="12" r="10"/>
+                                                            <path d="M12 16v-4"/>
+                                                            <path d="M12 8h.01"/>
+                                                        </svg>
                                                     </button>
                                                 </div>
                                             </div>
@@ -111,8 +230,164 @@
                         @endif
                     @endforeach
                 </div>
-            </section>
+
+                {{-- Empty State --}}
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <div class="empty-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.3-4.3"/>
+                        </svg>
+                    </div>
+                    <h3>No hay cursos en esta categoria</h3>
+                    <p>Intenta seleccionar otra categoria</p>
+                </div>
+            </div>
         </main>
+
+        {{-- Footer --}}
+        <footer class="main-footer">
+            <div class="footer-inner">
+                <p>Universidad Santiago de Cali - Bienestar Universitario</p>
+                <div class="footer-links">
+                    <a href="#">Ayuda</a>
+                    <a href="#">Contacto</a>
+                </div>
+            </div>
+        </footer>
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script>
+        // ── Debug Info ──
+        console.log("Cursos cargados desde Laravel:", {{ $cursos->count() }});
+        
+        // ── GSAP Animations ──
+        document.addEventListener('DOMContentLoaded', () => {
+            // ELIMINAMOS cualquier opacidad previa para que se vean sí o sí
+            gsap.set(".course-card, .section-header, .hero-section, .filter-btn", { 
+                opacity: 1, 
+                visibility: "visible",
+                y: 0,
+                x: 0
+            });
+
+            const tl = gsap.timeline({
+                defaults: { ease: "power2.out" }
+            });
+
+            // Animamos DESDE valores invisibles HACIA los visibles (from)
+            tl.from(".main-header", {
+                yPercent: -100,
+                duration: 0.8
+            });
+
+            tl.from(".hero-section", {
+                opacity: 0,
+                y: 20,
+                duration: 0.6
+            }, "-=0.4");
+
+            tl.from(".filter-btn", {
+                opacity: 0,
+                y: 10,
+                stagger: 0.03,
+                duration: 0.4
+            }, "-=0.3");
+
+            if (document.querySelectorAll(".course-card").length > 0) {
+                tl.from(".section-header", {
+                    opacity: 0,
+                    x: -15,
+                    stagger: 0.1,
+                    duration: 0.4
+                }, "-=0.2");
+
+                tl.from(".course-card", {
+                    opacity: 0,
+                    y: 20,
+                    stagger: 0.03,
+                    duration: 0.5
+                }, "-=0.3");
+            }
+        });
+
+        // ── Filter Functionality ──
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const sections = document.querySelectorAll('.course-section');
+        const cards = document.querySelectorAll('.course-card');
+        const emptyState = document.getElementById('emptyState');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const filter = btn.dataset.filter;
+
+                // Update active button
+                filterBtns.forEach(b => {
+                    b.classList.remove('active');
+                    b.setAttribute('aria-selected', 'false');
+                });
+                btn.classList.add('active');
+                btn.setAttribute('aria-selected', 'true');
+
+                // Filter sections
+                let visibleCount = 0;
+
+                if (filter === 'all') {
+                    sections.forEach(section => {
+                        section.style.display = '';
+                        visibleCount++;
+                    });
+                } else {
+                    sections.forEach(section => {
+                        if (section.dataset.category === filter) {
+                            section.style.display = '';
+                            visibleCount++;
+                        } else {
+                            section.style.display = 'none';
+                        }
+                    });
+                }
+
+                // Show/hide empty state
+                if (visibleCount === 0) {
+                    emptyState.style.display = 'flex';
+                    gsap.from(emptyState, { opacity: 0, y: 20, duration: 0.4 });
+                } else {
+                    emptyState.style.display = 'none';
+                }
+
+                // Animate visible cards
+                const visibleCards = filter === 'all' 
+                    ? '.course-card' 
+                    : `.course-section[data-category="${filter}"] .course-card`;
+                
+                gsap.fromTo(visibleCards,
+                    { opacity: 0, y: 25 },
+                    { opacity: 1, y: 0, duration: 0.4, stagger: 0.06, ease: "power2.out" }
+                );
+            });
+        });
+
+        // ── Button interactions ──
+        document.querySelectorAll('.btn-inscribir').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const cursoId = this.dataset.cursoId;
+                // Animacion de feedback
+                gsap.to(this, { scale: 0.95, duration: 0.1, yoyo: true, repeat: 1 });
+                // Tu logica de inscripcion aqui
+                // window.location.href = `/inscribir/${cursoId}`;
+            });
+        });
+
+        document.querySelectorAll('.btn-info').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const cursoId = this.dataset.cursoId;
+                gsap.to(this, { scale: 0.9, duration: 0.1, yoyo: true, repeat: 1 });
+                // Tu logica de ver detalles aqui
+                // window.location.href = `/cursos/${cursoId}`;
+            });
+        });
+    </script>
 </body>
 </html>
