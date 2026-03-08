@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\RegisterController;
 // Ruta para registro de usuarios
 Route::post('/register', [RegisterController::class , 'store']);
 
+
 // Rutas para login de usuarios: GET muestra el formulario, POST procesa credenciales
 use App\Http\Controllers\Auth\LoginController;
 
