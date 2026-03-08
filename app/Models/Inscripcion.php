@@ -10,9 +10,11 @@ class Inscripcion extends Model
     //
     use HasFactory;
 
+    protected $table = 'inscripciones';
+
     protected $fillable = [
         'horario_id',
-        'user_id',
+        'usuario_id',
         'fecha_inscripcion',
         'tipo_inscripcion',
     ];

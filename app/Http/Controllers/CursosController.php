@@ -23,7 +23,7 @@ class CursosController extends Controller
         // Query para obtener solo los horarios activos del curso seleccionado (Curso_id)
         $horariosCurso = Horario::where('curso_id', $cursoId)->where('estado', true)->get();
 
-        // Retornar los horarios en formato JSON
-        return response()->json($horariosCurso);
+        // Retornar los horarios en formato JSON envueltos en un objeto
+        return response()->json(['horarios' => $horariosCurso]);
     }
 }

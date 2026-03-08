@@ -13,11 +13,10 @@ class InscripcionController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'user_id'    => 'required|exists:users,id',
             'horario_id' => 'required|exists:horarios,id',
         ]);
 
-        $user = User::findOrFail($request->user_id);
+        $user = auth()->user();
         $horario = Horario::with('curso')->findOrFail($request->horario_id);
 
         // valida si el horario esta activo
@@ -31,7 +30,7 @@ class InscripcionController extends Controller
         }
 
         // paso extra para validar que no este inscripto aun 
-        $estadoInscripcion = Inscripcion::where('user_id', $user->id)
+        $estadoInscripcion = Inscripcion::where('usuario_id', $user->id)
             ->where('horario_id', $horario->id)
             ->exists();
 
@@ -42,7 +41,7 @@ class InscripcionController extends Controller
         // validacion por si el usuario ya esta inscripto a otro curso del mismo tipo (solo se permite una inscripcion por tipo)
         $categoria = $horario->curso->tipo_curso;
 
-        $inscriptoCategoria = Inscripcion::where('user_id', $user->id)
+        $inscriptoCategoria = Inscripcion::where('usuario_id', $user->id)
             ->whereHas('horario.curso', function ($query) use ($categoria) {
                 $query->where('tipo_curso', $categoria);
             })
@@ -50,14 +49,14 @@ class InscripcionController extends Controller
 
         if ($inscriptoCategoria) {
             return response()->json([
-                'message' => "Usuario ya se encuentra inscripto a un curos de  {$categoria}"
+                'message' => "Usuario ya se encuentra inscripto a un curso de {$categoria}"
             ], 400);
         }
 
         // 5️⃣ Transaction (safe capacity update)
         DB::transaction(function () use ($user, $horario) {
             Inscripcion::create([
-                'user_id' => $user->id,
+                'usuario_id' => $user->id,
                 'horario_id' => $horario->id,
                 'tipo_inscripcion' => $user->estudiante ? 'estudiante' : 'tercero',
             ]);
@@ -72,7 +71,7 @@ class InscripcionController extends Controller
 
     public function destroy(Request $request, $id)
     {
-        $userId = $request->input('user_id');
+        $userId = auth()->id();
 
         $inscripcion = Inscripcion::where('id', $id)
             ->where('usuario_id', $userId)

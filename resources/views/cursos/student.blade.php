@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="es">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,8 +10,11 @@
     {{-- Google Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
 </head>
+
 <body>
     <div class="app-layout">
         {{-- Header --}}
@@ -19,7 +23,8 @@
                 <a href="{{ url('/cursos') }}" class="logo-link">
                     <div class="logo-icon">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                            <path
+                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                         </svg>
                     </div>
                     <div class="logo-text">
@@ -36,8 +41,8 @@
                     <div class="user-badge">
                         <div class="user-avatar">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                <circle cx="12" cy="7" r="4"/>
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
                             </svg>
                         </div>
                         <span>Estudiante</span>
@@ -45,10 +50,11 @@
                     <form action="{{ url('/logout') }}" method="POST" class="logout-form">
                         @csrf
                         <button type="submit" class="logout-btn" aria-label="Cerrar sesion">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                                <polyline points="16 17 21 12 16 7"/>
-                                <line x1="21" y1="12" x2="9" y2="12"/>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                <polyline points="16 17 21 12 16 7" />
+                                <line x1="21" y1="12" x2="9" y2="12" />
                             </svg>
                             <span>Salir</span>
                         </button>
@@ -64,7 +70,8 @@
                 <section class="hero-section">
                     <div class="hero-text">
                         <h1>Elige tu curso de bienestar</h1>
-                        <p>Explora los cursos disponibles en Deporte formativo, Arte y cultura, y Catedra Santiaguina.</p>
+                        <p>Explora los cursos disponibles en Deporte formativo, Arte y cultura, y Catedra Santiaguina.
+                        </p>
                     </div>
                 </section>
 
@@ -72,46 +79,51 @@
                 <div class="filter-tabs" role="tablist">
                     <button type="button" data-filter="all" class="filter-btn active" role="tab" aria-selected="true">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="3" width="7" height="7" rx="1"/>
-                            <rect x="14" y="3" width="7" height="7" rx="1"/>
-                            <rect x="3" y="14" width="7" height="7" rx="1"/>
-                            <rect x="14" y="14" width="7" height="7" rx="1"/>
+                            <rect x="3" y="3" width="7" height="7" rx="1" />
+                            <rect x="14" y="3" width="7" height="7" rx="1" />
+                            <rect x="3" y="14" width="7" height="7" rx="1" />
+                            <rect x="14" y="14" width="7" height="7" rx="1" />
                         </svg>
                         <span>Todos</span>
                         <span class="filter-count">{{ $cursos->count() }}</span>
                     </button>
-                    <button type="button" data-filter="Deporte formativo" class="filter-btn" role="tab" aria-selected="false">
+                    <button type="button" data-filter="Deporte formativo" class="filter-btn" role="tab"
+                        aria-selected="false">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <path d="m4.93 4.93 4.24 4.24"/>
-                            <path d="m14.83 9.17 4.24-4.24"/>
-                            <path d="m14.83 14.83 4.24 4.24"/>
-                            <path d="m9.17 14.83-4.24 4.24"/>
-                            <circle cx="12" cy="12" r="4"/>
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="m4.93 4.93 4.24 4.24" />
+                            <path d="m14.83 9.17 4.24-4.24" />
+                            <path d="m14.83 14.83 4.24 4.24" />
+                            <path d="m9.17 14.83-4.24 4.24" />
+                            <circle cx="12" cy="12" r="4" />
                         </svg>
                         <span>Deporte</span>
-                        <span class="filter-count">{{ $cursos->where('tipo_curso', 'Deporte formativo')->count() }}</span>
+                        <span
+                            class="filter-count">{{ $cursos->where('tipo_curso', 'Deporte formativo')->count() }}</span>
                     </button>
-                    <button type="button" data-filter="Arte y cultura" class="filter-btn" role="tab" aria-selected="false">
+                    <button type="button" data-filter="Arte y cultura" class="filter-btn" role="tab"
+                        aria-selected="false">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2v4"/>
-                            <path d="m6.8 14-3.5 2"/>
-                            <path d="m20.7 16-3.5-2"/>
-                            <path d="m6.8 10-3.5-2"/>
-                            <path d="m20.7 8-3.5 2"/>
-                            <circle cx="12" cy="12" r="6"/>
+                            <path d="M12 2v4" />
+                            <path d="m6.8 14-3.5 2" />
+                            <path d="m20.7 16-3.5-2" />
+                            <path d="m6.8 10-3.5-2" />
+                            <path d="m20.7 8-3.5 2" />
+                            <circle cx="12" cy="12" r="6" />
                         </svg>
                         <span>Arte y Cultura</span>
                         <span class="filter-count">{{ $cursos->where('tipo_curso', 'Arte y cultura')->count() }}</span>
                     </button>
-                    <button type="button" data-filter="Catedra Santiaguina" class="filter-btn" role="tab" aria-selected="false">
+                    <button type="button" data-filter="Catedra Santiaguina" class="filter-btn" role="tab"
+                        aria-selected="false">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
-                            <path d="M8 7h6"/>
-                            <path d="M8 11h8"/>
+                            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+                            <path d="M8 7h6" />
+                            <path d="M8 11h8" />
                         </svg>
                         <span>Catedra</span>
-                        <span class="filter-count">{{ $cursos->where('tipo_curso', 'Catedra Santiaguina')->count() }}</span>
+                        <span
+                            class="filter-count">{{ $cursos->where('tipo_curso', 'Catedra Santiaguina')->count() }}</span>
                     </button>
                 </div>
 
@@ -136,32 +148,34 @@
                                     <div class="section-icon section-icon--{{ $config['color'] }}">
                                         @if ($config['icon'] === 'sport')
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <circle cx="12" cy="12" r="10"/>
-                                                <path d="m4.93 4.93 4.24 4.24"/>
-                                                <path d="m14.83 9.17 4.24-4.24"/>
-                                                <path d="m14.83 14.83 4.24 4.24"/>
-                                                <path d="m9.17 14.83-4.24 4.24"/>
-                                                <circle cx="12" cy="12" r="4"/>
+                                                <circle cx="12" cy="12" r="10" />
+                                                <path d="m4.93 4.93 4.24 4.24" />
+                                                <path d="m14.83 9.17 4.24-4.24" />
+                                                <path d="m14.83 14.83 4.24 4.24" />
+                                                <path d="m9.17 14.83-4.24 4.24" />
+                                                <circle cx="12" cy="12" r="4" />
                                             </svg>
                                         @elseif ($config['icon'] === 'art')
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/>
-                                                <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/>
-                                                <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/>
-                                                <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/>
-                                                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z"/>
+                                                <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+                                                <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+                                                <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+                                                <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+                                                <path
+                                                    d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z" />
                                             </svg>
                                         @else
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
-                                                <path d="M8 7h6"/>
-                                                <path d="M8 11h8"/>
+                                                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+                                                <path d="M8 7h6" />
+                                                <path d="M8 11h8" />
                                             </svg>
                                         @endif
                                     </div>
                                     <div class="section-title-group">
                                         <h2 class="section-title">{{ $categoria }}</h2>
-                                        <span class="section-count">{{ $cursosGrupo->count() }} curso{{ $cursosGrupo->count() !== 1 ? 's' : '' }}</span>
+                                        <span class="section-count">{{ $cursosGrupo->count() }}
+                                            curso{{ $cursosGrupo->count() !== 1 ? 's' : '' }}</span>
                                     </div>
                                 </header>
 
@@ -175,26 +189,27 @@
                                                     <div class="card-placeholder">
                                                         @if ($config['icon'] === 'sport')
                                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                                                <circle cx="12" cy="12" r="10"/>
-                                                                <path d="m4.93 4.93 4.24 4.24"/>
-                                                                <path d="m14.83 9.17 4.24-4.24"/>
-                                                                <path d="m14.83 14.83 4.24 4.24"/>
-                                                                <path d="m9.17 14.83-4.24 4.24"/>
-                                                                <circle cx="12" cy="12" r="4"/>
+                                                                <circle cx="12" cy="12" r="10" />
+                                                                <path d="m4.93 4.93 4.24 4.24" />
+                                                                <path d="m14.83 9.17 4.24-4.24" />
+                                                                <path d="m14.83 14.83 4.24 4.24" />
+                                                                <path d="m9.17 14.83-4.24 4.24" />
+                                                                <circle cx="12" cy="12" r="4" />
                                                             </svg>
                                                         @elseif ($config['icon'] === 'art')
                                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                                                <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/>
-                                                                <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/>
-                                                                <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/>
-                                                                <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/>
-                                                                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z"/>
+                                                                <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+                                                                <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+                                                                <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+                                                                <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+                                                                <path
+                                                                    d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z" />
                                                             </svg>
                                                         @else
                                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                                                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
-                                                                <path d="M8 7h6"/>
-                                                                <path d="M8 11h8"/>
+                                                                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+                                                                <path d="M8 7h6" />
+                                                                <path d="M8 11h8" />
                                                             </svg>
                                                         @endif
                                                     </div>
@@ -209,16 +224,17 @@
                                                 <div class="card-actions">
                                                     <button type="button" class="btn-inscribir" data-curso-id="{{ $curso->id }}">
                                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                            <path d="M12 5v14"/>
-                                                            <path d="M5 12h14"/>
+                                                            <path d="M12 5v14" />
+                                                            <path d="M5 12h14" />
                                                         </svg>
                                                         <span>Inscribirse</span>
                                                     </button>
-                                                    <button type="button" class="btn-info" data-curso-id="{{ $curso->id }}" aria-label="Ver detalles">
+                                                    <button type="button" class="btn-info" data-curso-id="{{ $curso->id }}"
+                                                        aria-label="Ver detalles">
                                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                            <circle cx="12" cy="12" r="10"/>
-                                                            <path d="M12 16v-4"/>
-                                                            <path d="M12 8h.01"/>
+                                                            <circle cx="12" cy="12" r="10" />
+                                                            <path d="M12 16v-4" />
+                                                            <path d="M12 8h.01" />
                                                         </svg>
                                                     </button>
                                                 </div>
@@ -235,8 +251,8 @@
                 <div id="emptyState" class="empty-state" style="display: none;">
                     <div class="empty-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <circle cx="11" cy="11" r="8"/>
-                            <path d="m21 21-4.3-4.3"/>
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="m21 21-4.3-4.3" />
                         </svg>
                     </div>
                     <h3>No hay cursos en esta categoria</h3>
@@ -266,22 +282,22 @@
                     </div>
                     <button type="button" class="modal-close" id="closeModal">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 6L6 18M6 6l12 12"/>
+                            <path d="M18 6L6 18M6 6l12 12" />
                         </svg>
                     </button>
                 </header>
-                
+
                 <div class="modal-body">
                     <div id="modalLoading" class="modal-loading">
                         <div class="spinner"></div>
                         <span>Cargando horarios...</span>
                     </div>
-                    
+
                     <div id="modalError" class="modal-error" style="display: none;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <line x1="12" y1="8" x2="12" y2="12"/>
-                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
                         </svg>
                         <p>No se pudieron cargar los horarios. Intenta de nuevo.</p>
                     </div>
@@ -298,12 +314,12 @@
     <script>
         // ── Debug Info ──
         console.log("Cursos cargados desde Laravel:", {{ $cursos->count() }});
-        
+
         // ── GSAP Animations ──
         document.addEventListener('DOMContentLoaded', () => {
             // ELIMINAMOS cualquier opacidad previa para que se vean sí o sí
-            gsap.set(".course-card, .section-header, .hero-section, .filter-btn", { 
-                opacity: 1, 
+            gsap.set(".course-card, .section-header, .hero-section, .filter-btn", {
+                opacity: 1,
                 visibility: "visible",
                 y: 0,
                 x: 0
@@ -395,10 +411,10 @@
                 }
 
                 // Animate visible cards
-                const visibleCards = filter === 'all' 
-                    ? '.course-card' 
+                const visibleCards = filter === 'all'
+                    ? '.course-card'
                     : `.course-section[data-category="${filter}"] .course-card`;
-                
+
                 gsap.fromTo(visibleCards,
                     { opacity: 0, y: 25 },
                     { opacity: 1, y: 0, duration: 0.4, stagger: 0.06, ease: "power2.out" }
@@ -427,28 +443,28 @@
             fetch(`/cursos/${cursoId}/horarios`, {
                 headers: { 'Accept': 'application/json' }
             })
-            .then(res => res.json())
-            .then(data => {
-                modalLoading.style.display = 'none';
-                
-                // La respuesta del controlador CursosController@horarios trae el objeto curso con sus horarios
-                const horarios = data.horarios || [];
-                
-                if (horarios.length === 0) {
-                    horariosList.innerHTML = '<p class="text-center text-slate-500 py-4">No hay horarios disponibles para este curso.</p>';
-                    return;
-                }
+                .then(res => res.json())
+                .then(data => {
+                    modalLoading.style.display = 'none';
 
-                horarios.forEach(h => {
-                    const isFull = h.cupo_disponible <= 0;
-                    const item = document.createElement('div');
-                    item.className = 'horario-item';
-                    item.innerHTML = `
+                    // La respuesta del controlador CursosController@horarios trae el objeto curso con sus horarios
+                    const horarios = data.horarios || [];
+
+                    if (horarios.length === 0) {
+                        horariosList.innerHTML = '<p class="text-center text-slate-500 py-4">No hay horarios disponibles para este curso.</p>';
+                        return;
+                    }
+
+                    horarios.forEach(h => {
+                        const isFull = h.cupo_disponible <= 0;
+                        const item = document.createElement('div');
+                        item.className = 'horario-item';
+                        item.innerHTML = `
                         <div class="horario-info">
                             <div class="horario-day-time">
                                 <span>${h.dia}</span>
                                 <span class="text-slate-300">|</span>
-                                <span>${h.hora_inicio.substring(0,5)} - ${h.hora_fin.substring(0,5)}</span>
+                                <span>${h.hora_inicio.substring(0, 5)} - ${h.hora_fin.substring(0, 5)}</span>
                             </div>
                             <div class="horario-profesor">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5">
@@ -467,22 +483,22 @@
                             ${isFull ? 'Agotado' : 'Inscribirme'}
                         </button>
                     `;
-                    horariosList.appendChild(item);
-                });
-
-                // Evento para los botones de inscripción dentro del modal
-                horariosList.querySelectorAll('.btn-inscribir-horario').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const hId = this.dataset.horarioId;
-                        inscribirEstudiante(hId, this);
+                        horariosList.appendChild(item);
                     });
+
+                    // Evento para los botones de inscripción dentro del modal
+                    horariosList.querySelectorAll('.btn-inscribir-horario').forEach(btn => {
+                        btn.addEventListener('click', function () {
+                            const hId = this.dataset.horarioId;
+                            inscribirEstudiante(hId, this);
+                        });
+                    });
+                })
+                .catch(err => {
+                    console.error(err);
+                    modalLoading.style.display = 'none';
+                    modalError.style.display = 'flex';
                 });
-            })
-            .catch(err => {
-                console.error(err);
-                modalLoading.style.display = 'none';
-                modalError.style.display = 'flex';
-            });
         }
 
         function closeModal() {
@@ -509,8 +525,7 @@
                         'Accept': 'application/json'
                     },
                     body: JSON.stringify({
-                        horario_id: horarioId,
-                        user_id: {{ Auth::id() }} // Pasamos el ID del usuario logueado
+                        horario_id: horarioId
                     })
                 });
 
@@ -533,7 +548,7 @@
         }
 
         document.querySelectorAll('.btn-inscribir').forEach(btn => {
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', function () {
                 const cursoId = this.dataset.cursoId;
                 const cursoCard = this.closest('.course-card');
                 const cursoNombre = cursoCard.querySelector('.card-title').textContent;
@@ -541,14 +556,14 @@
 
                 // Animacion de feedback
                 gsap.to(this, { scale: 0.95, duration: 0.1, yoyo: true, repeat: 1 });
-                
+
                 // Abrir el modal con los datos
                 openModal(cursoId, cursoNombre, cursoCategoria);
             });
         });
 
         document.querySelectorAll('.btn-info').forEach(btn => {
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', function () {
                 const cursoId = this.dataset.cursoId;
                 gsap.to(this, { scale: 0.9, duration: 0.1, yoyo: true, repeat: 1 });
                 // Tu logica de ver detalles aqui
@@ -557,4 +572,5 @@
         });
     </script>
 </body>
+
 </html>
