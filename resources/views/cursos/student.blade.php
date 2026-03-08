@@ -255,6 +255,43 @@
                 </div>
             </div>
         </footer>
+
+        {{-- Modal de Horarios --}}
+        <div id="horariosModal" class="modal-overlay" style="display: none;">
+            <div class="modal-container">
+                <header class="modal-header">
+                    <div class="modal-title-group">
+                        <h3 id="modalCursoNombre" class="modal-title">Horarios Disponibles</h3>
+                        <p id="modalCursoCategoria" class="modal-subtitle"></p>
+                    </div>
+                    <button type="button" class="modal-close" id="closeModal">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </header>
+                
+                <div class="modal-body">
+                    <div id="modalLoading" class="modal-loading">
+                        <div class="spinner"></div>
+                        <span>Cargando horarios...</span>
+                    </div>
+                    
+                    <div id="modalError" class="modal-error" style="display: none;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="8" x2="12" y2="12"/>
+                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        <p>No se pudieron cargar los horarios. Intenta de nuevo.</p>
+                    </div>
+
+                    <div id="horariosList" class="horarios-list">
+                        {{-- Se llena con JS --}}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -370,13 +407,143 @@
         });
 
         // ── Button interactions ──
+        const modal = document.getElementById('horariosModal');
+        const closeModalBtn = document.getElementById('closeModal');
+        const horariosList = document.getElementById('horariosList');
+        const modalLoading = document.getElementById('modalLoading');
+        const modalError = document.getElementById('modalError');
+        const modalCursoNombre = document.getElementById('modalCursoNombre');
+        const modalCursoCategoria = document.getElementById('modalCursoCategoria');
+
+        function openModal(cursoId, cursoNombre, cursoCategoria) {
+            modalCursoNombre.textContent = cursoNombre;
+            modalCursoCategoria.textContent = cursoCategoria;
+            modal.style.display = 'flex';
+            horariosList.innerHTML = '';
+            modalLoading.style.display = 'flex';
+            modalError.style.display = 'none';
+
+            // Cargar horarios vía AJAX (usando la ruta que ya tienes)
+            fetch(`/cursos/${cursoId}/horarios`, {
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                modalLoading.style.display = 'none';
+                
+                // La respuesta del controlador CursosController@horarios trae el objeto curso con sus horarios
+                const horarios = data.horarios || [];
+                
+                if (horarios.length === 0) {
+                    horariosList.innerHTML = '<p class="text-center text-slate-500 py-4">No hay horarios disponibles para este curso.</p>';
+                    return;
+                }
+
+                horarios.forEach(h => {
+                    const isFull = h.cupo_disponible <= 0;
+                    const item = document.createElement('div');
+                    item.className = 'horario-item';
+                    item.innerHTML = `
+                        <div class="horario-info">
+                            <div class="horario-day-time">
+                                <span>${h.dia}</span>
+                                <span class="text-slate-300">|</span>
+                                <span>${h.hora_inicio.substring(0,5)} - ${h.hora_fin.substring(0,5)}</span>
+                            </div>
+                            <div class="horario-profesor">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                                </svg>
+                                <span>Prof. ${h.profesor || 'Por asignar'}</span>
+                            </div>
+                            <span class="horario-cupos ${isFull ? 'horario-cupos--full' : 'horario-cupos--available'}">
+                                ${h.cupo_disponible} cupos disponibles
+                            </span>
+                        </div>
+                        <button type="button" 
+                                class="btn-inscribir-horario" 
+                                data-horario-id="${h.id}"
+                                ${isFull ? 'disabled' : ''}>
+                            ${isFull ? 'Agotado' : 'Inscribirme'}
+                        </button>
+                    `;
+                    horariosList.appendChild(item);
+                });
+
+                // Evento para los botones de inscripción dentro del modal
+                horariosList.querySelectorAll('.btn-inscribir-horario').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const hId = this.dataset.horarioId;
+                        inscribirEstudiante(hId, this);
+                    });
+                });
+            })
+            .catch(err => {
+                console.error(err);
+                modalLoading.style.display = 'none';
+                modalError.style.display = 'flex';
+            });
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        closeModalBtn.addEventListener('click', closeModal);
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // Función para procesar la inscripción
+        async function inscribirEstudiante(horarioId, btnElement) {
+            const originalText = btnElement.textContent;
+            btnElement.disabled = true;
+            btnElement.textContent = 'Procesando...';
+
+            try {
+                const response = await fetch('/inscripcion', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        horario_id: horarioId,
+                        user_id: {{ Auth::id() }} // Pasamos el ID del usuario logueado
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('¡Inscripción exitosa!');
+                    location.reload(); // Recargamos para actualizar cupos
+                } else {
+                    alert(data.message || 'Error al inscribirse');
+                    btnElement.disabled = false;
+                    btnElement.textContent = originalText;
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Error de conexión');
+                btnElement.disabled = false;
+                btnElement.textContent = originalText;
+            }
+        }
+
         document.querySelectorAll('.btn-inscribir').forEach(btn => {
             btn.addEventListener('click', function() {
                 const cursoId = this.dataset.cursoId;
+                const cursoCard = this.closest('.course-card');
+                const cursoNombre = cursoCard.querySelector('.card-title').textContent;
+                const cursoCategoria = cursoCard.querySelector('.card-badge').textContent;
+
                 // Animacion de feedback
                 gsap.to(this, { scale: 0.95, duration: 0.1, yoyo: true, repeat: 1 });
-                // Tu logica de inscripcion aqui
-                // window.location.href = `/inscribir/${cursoId}`;
+                
+                // Abrir el modal con los datos
+                openModal(cursoId, cursoNombre, cursoCategoria);
             });
         });
 
