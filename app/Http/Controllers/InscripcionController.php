@@ -53,7 +53,7 @@ class InscripcionController extends Controller
             ], 400);
         }
 
-        // 5️⃣ Transaction (safe capacity update)
+        // Transaction (safe capacity update)
         DB::transaction(function () use ($user, $horario) {
             Inscripcion::create([
                 'usuario_id' => $user->id,
@@ -69,9 +69,9 @@ class InscripcionController extends Controller
         ], 201);
     }
 
-    public function destroy(Request $request, $id)
+    public function destroy($id)
     {
-        $userId = auth()->id();
+        $userId = auth()->user()->id;
 
         $inscripcion = Inscripcion::where('id', $id)
             ->where('usuario_id', $userId)

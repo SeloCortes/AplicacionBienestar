@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\CursosAdminController;
 use App\Http\Controllers\Admin\HorariosAdminController;
 use App\Http\Controllers\CursosController;
 use App\Http\Controllers\InscripcionController;
+use App\Http\Controllers\Admin\InfomersAdminController;
 
 // grupo de rutas protegidas por autenticación
 Route::middleware(['auth'])->group(function () {
@@ -39,6 +40,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/inscripcion/tercero', [InscripcionController::class , 'store'])->middleware('tercero');
     Route::delete('/inscripcion/{id}', [InscripcionController::class , 'destroy'])->middleware(['estudiante', 'tercero']);
 
+
     // Rutas para administradores
     Route::middleware(['admin'])->group(function () {
 
@@ -52,6 +54,12 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/admin/horarios', [HorariosAdminController::class , 'store']);
             Route::put('/admin/horarios/{id}', [HorariosAdminController::class , 'update']);
             Route::delete('/admin/horarios/{id}', [HorariosAdminController::class , 'destroy']);
+
+
+            // Informes 
+            Route::get('/admin/informe', [InfomersAdminController::class , 'index'])->name('admin.informe.index');
+            Route::get('/admin/informe/generar', [InformeAdminController::class , 'generar']);
+            
         }
         );
     });
