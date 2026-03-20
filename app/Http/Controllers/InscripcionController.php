@@ -7,6 +7,7 @@ use App\Models\Inscripcion;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class InscripcionController extends Controller
 {
@@ -17,6 +18,19 @@ class InscripcionController extends Controller
         ]);
 
         $user = auth()->user();
+
+        // Validacion de tiempo de espera (1 minuto)
+        $ultimaInscripcion = Inscripcion::where('usuario_id', $user->id)
+            ->latest()
+            ->first();
+
+        if ($ultimaInscripcion && $ultimaInscripcion->created_at->addMinute()->isFuture()) {
+            $segundosRestantes = $ultimaInscripcion->created_at->addMinute()->diffInSeconds(Carbon::now());
+            return response()->json([
+                'message' => "Debes esperar {$segundosRestantes} segundos para realizar otra acción."
+            ], 429);
+        }
+
         $horario = Horario::with('curso')->findOrFail($request->horario_id);
 
         // valida si el horario esta activo
@@ -81,6 +95,18 @@ class InscripcionController extends Controller
             return response()->json([
                 'message' => 'Error: Inscripcion no existe'
             ], 404);
+        }
+
+        // Validacion de tiempo de espera (1 minuto) antes de borrar
+        $ultimaInscripcion = Inscripcion::where('usuario_id', $userId)
+            ->latest()
+            ->first();
+
+        if ($ultimaInscripcion && $ultimaInscripcion->created_at->addMinute()->isFuture()) {
+            $segundosRestantes = $ultimaInscripcion->created_at->addMinute()->diffInSeconds(Carbon::now());
+            return response()->json([
+                'message' => "Debes esperar {$segundosRestantes} segundos para realizar otra acción."
+            ], 429);
         }
 
         $horario = Horario::find($inscripcion->horario_id);

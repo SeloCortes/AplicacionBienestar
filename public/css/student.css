@@ -780,6 +780,27 @@ a { color: inherit; text-decoration: none; }
     transform: none;
 }
 
+.btn-desinscribir-horario {
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    background: #fee2e2;
+    color: #991b1b;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: 1px solid #fecaca;
+}
+
+.btn-desinscribir-horario:hover {
+    background: #fecaca;
+    transform: translateY(-1px);
+}
+
+.horario-cupos--enrolled {
+    background: #dcfce7;
+    color: #166534;
+}
+
 /* Responsive */
 @media (min-width: 640px) {
     .main-content { padding: 2.5rem 1.5rem; }

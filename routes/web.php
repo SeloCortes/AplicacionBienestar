@@ -38,7 +38,7 @@ Route::middleware(['auth'])->group(function () {
     // Rutas para inscripciones de estudiantes y terceros.
     Route::post('/inscripcion', [InscripcionController::class , 'store'])->middleware('estudiante');
     Route::post('/inscripcion/tercero', [InscripcionController::class , 'store'])->middleware('tercero');
-    Route::delete('/inscripcion/{id}', [InscripcionController::class , 'destroy'])->middleware(['estudiante', 'tercero']);
+    Route::delete('/inscripcion/{id}', [InscripcionController::class , 'destroy'])->middleware('auth');
 
 
     // Rutas para administradores

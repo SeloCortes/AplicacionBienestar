@@ -310,6 +310,10 @@
         </div>
     </div>
 
+    <script>
+        // Pasar inscripciones del usuario a JS
+        const userInscriptions = @json($userInscriptions);
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script>
         // ── Debug Info ──
@@ -457,8 +461,38 @@
 
                     horarios.forEach(h => {
                         const isFull = h.cupo_disponible <= 0;
+                        const userEnrollment = userInscriptions.find(ins => ins.horario_id === h.id);
+                        const isEnrolledInThis = !!userEnrollment;
+                        
+                        // Verificar si el usuario ya esta inscrito en OTRO curso de esta misma categoría
+                        const isEnrolledInCategory = userInscriptions.some(ins => 
+                            ins.horario && ins.horario.curso && ins.horario.curso.tipo_curso === cursoCategoria && ins.horario_id !== h.id
+                        );
+
                         const item = document.createElement('div');
                         item.className = 'horario-item';
+                        
+                        let buttonHtml = '';
+                        if (isEnrolledInThis) {
+                            buttonHtml = `
+                                <button type="button" 
+                                        class="btn-desinscribir-horario" 
+                                        data-inscripcion-id="${userEnrollment.id}">
+                                    Desinscribirme
+                                </button>
+                            `;
+                        } else {
+                            const disabledReason = isFull ? 'Agotado' : (isEnrolledInCategory ? 'Ya inscrito en categoría' : '');
+                            buttonHtml = `
+                                <button type="button" 
+                                        class="btn-inscribir-horario" 
+                                        data-horario-id="${h.id}"
+                                        ${disabledReason ? 'disabled' : ''}>
+                                    ${disabledReason || 'Inscribirme'}
+                                </button>
+                            `;
+                        }
+
                         item.innerHTML = `
                         <div class="horario-info">
                             <div class="horario-day-time">
@@ -473,15 +507,10 @@
                                 <span>Prof. ${h.profesor || 'Por asignar'}</span>
                             </div>
                             <span class="horario-cupos ${isFull ? 'horario-cupos--full' : 'horario-cupos--available'}">
-                                ${h.cupo_disponible} cupos disponibles
+                                ${isEnrolledInThis ? 'Tu horario' : h.cupo_disponible + ' cupos disponibles'}
                             </span>
                         </div>
-                        <button type="button" 
-                                class="btn-inscribir-horario" 
-                                data-horario-id="${h.id}"
-                                ${isFull ? 'disabled' : ''}>
-                            ${isFull ? 'Agotado' : 'Inscribirme'}
-                        </button>
+                        ${buttonHtml}
                     `;
                         horariosList.appendChild(item);
                     });
@@ -491,6 +520,14 @@
                         btn.addEventListener('click', function () {
                             const hId = this.dataset.horarioId;
                             inscribirEstudiante(hId, this);
+                        });
+                    });
+
+                    // Evento para los botones de desinscripción
+                    horariosList.querySelectorAll('.btn-desinscribir-horario').forEach(btn => {
+                        btn.addEventListener('click', function () {
+                            const insId = this.dataset.inscripcionId;
+                            desinscribirEstudiante(insId, this);
                         });
                     });
                 })
@@ -536,6 +573,46 @@
                     location.reload(); // Recargamos para actualizar cupos
                 } else {
                     alert(data.message || 'Error al inscribirse');
+                    btnElement.disabled = false;
+                    btnElement.textContent = originalText;
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Error de conexión');
+                btnElement.disabled = false;
+                btnElement.textContent = originalText;
+            }
+        }
+
+        // Función para cancelar la inscripción
+        async function desinscribirEstudiante(inscripcionId, btnElement) {
+            if (!confirm('¿Seguro que quieres cancelar tu inscripción?')) return;
+
+            const originalText = btnElement.textContent;
+            btnElement.disabled = true;
+            btnElement.textContent = 'Cancelando...';
+
+            try {
+                const response = await fetch(`/inscripcion/${inscripcionId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Inscripción cancelada correctamente');
+                    location.reload();
+                } else if (response.status === 429) {
+                    // Manejar el error de tiempo de espera (1 minuto)
+                    alert(data.message);
+                    btnElement.disabled = false;
+                    btnElement.textContent = originalText;
+                } else {
+                    alert(data.message || 'Error al cancelar');
                     btnElement.disabled = false;
                     btnElement.textContent = originalText;
                 }

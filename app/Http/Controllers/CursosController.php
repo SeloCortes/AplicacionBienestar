@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Curso;
 use App\Models\Horario;
+use App\Models\Inscripcion;
 
 class CursosController extends Controller
 {
@@ -12,9 +13,17 @@ class CursosController extends Controller
     {
         // Query para obtener solo los cursos activos
         $cursos = Curso::where('estado', true)->get();
+        
+        // Obtener inscripciones del usuario actual con info del curso
+        $userInscriptions = [];
+        if (auth()->check()) {
+            $userInscriptions = Inscripcion::where('usuario_id', auth()->id())
+                ->with('horario.curso')
+                ->get();
+        }
 
-        // Retornar la vista con la lista de cursos
-        return response()->view('cursos.student', compact('cursos'));
+        // Retornar la vista con la lista de cursos e inscripciones
+        return response()->view('cursos.student', compact('cursos', 'userInscriptions'));
     }
 
     // Método para obtener horarios de un curso específico
