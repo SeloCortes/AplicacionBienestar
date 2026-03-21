@@ -10,7 +10,7 @@ class AdministradorSeeder extends Seeder
 {
     public function run()
     {
-        $users = User::whereIn('identificacion', [12345, 12346])->get();
+        $users = User::whereIn('identificacion', [1001, 1002])->get();
 
         foreach ($users as $user) {
             Administrativo::create([

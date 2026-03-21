@@ -10,12 +10,12 @@ class TerceroSeeder extends Seeder
 {
     public function run()
     {
-        $user = User::where('identificacion', 12349)->first();
+        $terceros = User::whereIn('identificacion', [3001, 3002])->get();
 
-        if ($user) {
+        foreach ($terceros as $index => $user) {
             Tercero::create([
                 'usuario_id' => $user->id,
-                'estamento' => 'Profesor',
+                'estamento' => $index == 0 ? 'Docente' : 'Egresado',
             ]);
         }
     }

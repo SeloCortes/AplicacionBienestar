@@ -8,6 +8,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use phpDocumentor\Reflection\Types\Integer;
+
+
 
 class InscripcionController extends Controller
 {
@@ -25,7 +28,7 @@ class InscripcionController extends Controller
             ->first();
 
         if ($ultimaInscripcion && $ultimaInscripcion->created_at->addMinute()->isFuture()) {
-            $segundosRestantes = $ultimaInscripcion->created_at->addMinute()->diffInSeconds(Carbon::now());
+            $segundosRestantes = intval(abs($ultimaInscripcion->created_at->addMinute()->diffInSeconds(Carbon::now())));
             return response()->json([
                 'message' => "Debes esperar {$segundosRestantes} segundos para realizar otra acción."
             ], 429);
@@ -103,7 +106,7 @@ class InscripcionController extends Controller
             ->first();
 
         if ($ultimaInscripcion && $ultimaInscripcion->created_at->addMinute()->isFuture()) {
-            $segundosRestantes = $ultimaInscripcion->created_at->addMinute()->diffInSeconds(Carbon::now());
+            $segundosRestantes = intval(abs($ultimaInscripcion->created_at->addMinute()->diffInSeconds(Carbon::now())));
             return response()->json([
                 'message' => "Debes esperar {$segundosRestantes} segundos para realizar otra acción."
             ], 429);

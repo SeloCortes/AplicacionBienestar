@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             EstudianteSeeder::class,
             TerceroSeeder::class,
             CursoSeeder::class,
+            HorarioSeeder::class,
         ]);
     }
 }
