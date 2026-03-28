@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 
 class LoginController extends Controller
 {
@@ -18,9 +19,24 @@ class LoginController extends Controller
             'password' => 'required|string',
         ]);
 
+        $limiterKey = 'login_'. $request->identificacion .'_'. $request->ip();
+
+        if (RateLimiter::tooManyAttempts($limiterKey, 5)) {
+            $seconds = RateLimiter::availableIn($limiterKey);
+            $msg = "Demasiados intentos de inicio de sesión. Por favor, inténtelo de nuevo en {$seconds} segundos.";
+            
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $msg, 'errors' => ['identificacion' => [$msg]]], 429);
+            }
+            return redirect()->route('login')->withErrors(['identificacion' => $msg])
+                ->withInput($request->only('identificacion'));
+        }
+
         $user = User::where('identificacion', $request->identificacion)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
+            RateLimiter::hit($limiterKey, 60); // Bloquea 60 segundos por cada hit fallido después de 5
+            
             $msg = 'Credenciales incorrectas';
             if ($request->expectsJson()) {
                 return response()->json(['message' => $msg, 'errors' => ['identificacion' => [$msg]]], 401);
@@ -28,6 +44,8 @@ class LoginController extends Controller
             return redirect()->route('login')->withErrors(['identificacion' => $msg])
                 ->withInput($request->only('identificacion'));
         }
+
+        RateLimiter::clear($limiterKey);
 
         // Autenticar al usuario y regenerar sesión
         Auth::login($user);
