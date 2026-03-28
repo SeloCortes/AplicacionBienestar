@@ -25,7 +25,7 @@ use App\Http\Controllers\Admin\CursosAdminController;
 use App\Http\Controllers\Admin\HorariosAdminController;
 use App\Http\Controllers\CursosController;
 use App\Http\Controllers\InscripcionController;
-use App\Http\Controllers\Admin\InfomersAdminController;
+use App\Http\Controllers\Admin\InformesAdminController;
 
 // grupo de rutas protegidas por autenticación
 Route::middleware(['auth'])->group(function () {
@@ -57,8 +57,8 @@ Route::middleware(['auth'])->group(function () {
 
 
             // Informes 
-            Route::get('/admin/informe', [InfomersAdminController::class , 'index'])->name('admin.informe.index');
-            Route::get('/admin/informe/generar', [InformeAdminController::class , 'generar']);
+            Route::get('/admin/informe', [InformesAdminController::class , 'index'])->name('admin.informe.index');
+            Route::get('/admin/informe/generar', [InformesAdminController::class , 'generar']);
             
         }
         );
