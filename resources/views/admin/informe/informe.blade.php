@@ -118,11 +118,12 @@
                     </div>
                 </div>
 
+                <nav class="admin-nav" style="display: flex; gap: 1.5rem; margin-left: 2rem;">
+                    <a href="{{ route('admin.cursos.index') }}" class="nav-link {{ request()->routeIs('admin.cursos.index') ? 'active' : '' }}" style="text-decoration: none; color: var(--muted-foreground); font-weight: 500; transition: all 0.2s;">Cursos</a>
+                    <a href="{{ route('admin.informe.index') }}" class="nav-link {{ request()->routeIs('admin.informe.index') ? 'active' : '' }}" style="text-decoration: none; color: var(--primary); font-weight: 700; border-bottom: 2px solid var(--primary); padding-bottom: 4px;">Informes</a>
+                </nav>
+
                 <div class="header-actions">
-                    <a href="{{ route('admin.cursos.index') }}" class="nav-button">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:1.25rem;height:1.25rem;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                        Volver a Cursos
-                    </a>
                     <form action="{{ url('/logout') }}" method="POST" class="logout-form">
                         @csrf
                         <button type="submit" class="logout-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4m7 14 5-5-5-5m5 5H9"/></svg></button>

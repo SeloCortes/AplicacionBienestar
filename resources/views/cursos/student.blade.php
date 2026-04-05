@@ -45,7 +45,7 @@
                                 <circle cx="12" cy="7" r="4" />
                             </svg>
                         </div>
-                        <span>Estudiante</span>
+                        <span>{{ auth()->user()->nombre_apellido }}</span>
                     </div>
                     <form action="{{ url('/logout') }}" method="POST" class="logout-form">
                         @csrf

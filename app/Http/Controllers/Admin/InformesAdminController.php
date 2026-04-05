@@ -82,6 +82,6 @@ class InformesAdminController extends Controller
             }
         }
 
-        return view('admin.informe.index', compact('estudiantesPivot', 'nombresCursos', 'cursosTipo', 'tipoCurso', 'cursoId'));
+        return view('admin.informe.informe', compact('estudiantesPivot', 'nombresCursos', 'cursosTipo', 'tipoCurso', 'cursoId'));
     }
 }

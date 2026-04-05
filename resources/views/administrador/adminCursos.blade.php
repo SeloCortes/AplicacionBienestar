@@ -36,6 +36,11 @@
                     </div>
                 </div>
 
+                <nav class="admin-nav" style="display: flex; gap: 1.5rem; margin-left: 2rem;">
+                    <a href="{{ route('admin.cursos.index') }}" class="nav-link {{ request()->routeIs('admin.cursos.index') ? 'active' : '' }}" style="text-decoration: none; color: var(--primary); font-weight: 700; border-bottom: 2px solid var(--primary); padding-bottom: 4px;">Cursos</a>
+                    <a href="{{ route('admin.informe.index') }}" class="nav-link {{ request()->routeIs('admin.informe.index') ? 'active' : '' }}" style="text-decoration: none; color: var(--muted-foreground); font-weight: 500; transition: all 0.2s;">Informes</a>
+                </nav>
+
                 <div class="header-actions">
                     <button type="button" class="btn-add-course" id="btnNewCourse">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:1.25rem;height:1.25rem;"><path d="M12 5v14M5 12h14"/></svg>
