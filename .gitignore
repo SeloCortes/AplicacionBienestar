@@ -24,3 +24,5 @@ Homestead.yaml
 Thumbs.db
 reporte_auditoria_laravel.md
 reporte_ejemplo_INSCRIPCIONES_DEPORTE_FORMATIVO.xlsx
+/database/seeders
+verify_data.php
