@@ -12,21 +12,27 @@ class UserSeeder extends Seeder
     {
         // Administradores (Identificaciones 1001 - 1005)
         $admins = [
-            ['id' => 1001, 'nombre' => 'Carlos Arturo Restrepo', 'correo' => 'carlos.restrepo@bienestar.edu.co', 'tel' => '3104567890', 'gen' => 'Masculino'],
-            ['id' => 1002, 'nombre' => 'Ana Maria Valencia', 'correo' => 'ana.valencia@bienestar.edu.co', 'tel' => '3157891234', 'gen' => 'Femenino'],
+            ['id' => 1001, 'nombre' => 'Coordinador Deporte Formativo', 'correo' => 'deporte.formativo@bienestar.edu.co', 'tel' => '3104567890', 'gen' => 'Masculino'],
+            ['id' => 1002, 'nombre' => 'Coordinador Arte y Cultura', 'correo' => 'arte.cultura@bienestar.edu.co', 'tel' => '3157891234', 'gen' => 'Femenino'],
+            ['id' => 1003, 'nombre' => 'Coordinador Cátedra Santiaguina', 'correo' => 'catedra.santiaguina@bienestar.edu.co', 'tel' => '3157823614', 'gen' => 'Femenino'],
+            ['id' => 1004, 'nombre' => 'Director de Bienestar', 'correo' => 'director.bienestar@bienestar.edu.co', 'tel' => '3101234567', 'gen' => 'Masculino'],
+            ['id' => 1005, 'nombre' => 'Administrador de Sistemas', 'correo' => 'admin.sistemas@bienestar.edu.co', 'tel' => '3107654321', 'gen' => 'Masculino'],
         ];
 
-        foreach ($admins as $admin) {
-            User::create([
-                'identificacion' => $admin['id'],
-                'nombre_apellido' => $admin['nombre'],
-                'correo' => $admin['correo'],
-                'password' => Hash::make('1234'),
-                'telefono' => $admin['tel'],
-                'genero' => $admin['gen'],
-            ]);
-        }
 
+        foreach ($admins as $admin) {
+            User::updateOrCreate(
+                ['identificacion' => $admin['id']],
+                [
+                    'nombre_apellido' => $admin['nombre'],
+                    'correo' => $admin['correo'],
+                    'password' => Hash::make('1234'),
+                    'telefono' => $admin['tel'],
+                    'genero' => $admin['gen'],
+                ]
+            );
+        }
+/*
         // Estudiantes (Identificaciones 2001 - 2010)
         $estudiantes = [
             ['id' => 2001, 'nombre' => 'Juan David Perez', 'correo' => 'juan.perez@estudiante.edu.co', 'tel' => '3001234567', 'gen' => 'Masculino'],
@@ -64,5 +70,6 @@ class UserSeeder extends Seeder
                 'genero' => $ter['gen'],
             ]);
         }
-    }
+ */    }
+       
 }
