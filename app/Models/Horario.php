@@ -16,9 +16,12 @@ class Horario extends Model
         'hora_inicio',
         'hora_fin',
         'profesor',
-        'cupo_maximo',
-        'cupo_disponible',
-        'estado',
+        'salon',
+        'cupo_maximo_estudiante',
+        'cupo_disponible_estudiante',
+        'cupo_maximo_tercero',
+        'cupo_disponible_tercero',
+        'activo',
     ];
 
     public function curso(){

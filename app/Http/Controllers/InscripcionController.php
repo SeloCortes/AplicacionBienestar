@@ -33,12 +33,15 @@ class InscripcionController extends Controller
             $horario = Horario::with('curso')->lockForUpdate()->findOrFail($request->horario_id);
 
             // valida si el horario esta activo
-            if (! $horario->estado) {
+            if (! $horario->activo) {
                 return response()->json(['message' => 'Horario no disponible'], 400);
             }
 
+            $tipoInscripcion = $user->estudiante ? 'estudiante' : 'tercero';
+            $cupoDisponibleCampo = 'cupo_disponible_' . $tipoInscripcion;
+
             // valida si el horario tiene cupos disponibles
-            if ($horario->cupo_disponible <= 0) {
+            if ($horario->$cupoDisponibleCampo <= 0) {
                 return response()->json(['message' => 'No cupos disponibles'], 400);
             }
 
@@ -69,10 +72,10 @@ class InscripcionController extends Controller
             Inscripcion::create([
                 'usuario_id' => $user->id,
                 'horario_id' => $horario->id,
-                'tipo_inscripcion' => $user->estudiante ? 'estudiante' : 'tercero',
+                'tipo_inscripcion' => $tipoInscripcion,
             ]);
 
-            $horario->decrement('cupo_disponible');
+            $horario->decrement($cupoDisponibleCampo);
 
             // Registrar la acción para bloquear futuras peticiones por 60 segundos
             RateLimiter::hit($limiterKey, 60);
@@ -111,7 +114,8 @@ class InscripcionController extends Controller
             $horario = Horario::find($inscripcion->horario_id);
 
             if ($horario) {
-                $horario->increment('cupo_disponible');
+                $cupoDisponibleCampo = 'cupo_disponible_' . $inscripcion->tipo_inscripcion;
+                $horario->increment($cupoDisponibleCampo);
             }
 
             $inscripcion->delete();

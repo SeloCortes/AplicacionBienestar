@@ -11,11 +11,12 @@ class Curso extends Model
     use HasFactory;
 
     protected $fillable = [
+        'codigo',
         'nombre',
         'tipo_curso',
         'descripcion',
         'imagen',
-        'estado',
+        'activo',
     ];
 
     public function horarios(){

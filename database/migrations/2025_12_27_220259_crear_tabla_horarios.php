@@ -17,12 +17,15 @@ return new class extends Migration
             $table->id();
             $table->foreignId('curso_id')->constrained()->cascadeOnDelete();
             $table->enum('dia', ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado']);
-            $table->time('hora_inicio');
-            $table->time('hora_fin');
+            $table->string('hora_inicio', 5);
+            $table->string('hora_fin', 5);
             $table->string('profesor');
-            $table->integer('cupo_maximo');
-            $table->integer('cupo_disponible');
-            $table->boolean('estado')->default(true);
+            $table->string('salon', 100)->nullable();
+            $table->integer('cupo_maximo_estudiante');
+            $table->integer('cupo_disponible_estudiante');
+            $table->integer('cupo_maximo_tercero');
+            $table->integer('cupo_disponible_tercero');
+            $table->boolean('activo')->default(true);
             $table->timestamps();
         });
 

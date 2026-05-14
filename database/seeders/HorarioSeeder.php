@@ -33,12 +33,15 @@ class HorarioSeeder extends Seeder
                 Horario::create([
                     'curso_id' => $curso->id,
                     'dia' => $dias[array_rand($dias)],
-                    'hora_inicio' => sprintf('%02d:00:00', $horaInicio),
-                    'hora_fin' => sprintf('%02d:00:00', $horaFin),
+                    'hora_inicio' => sprintf('%02d:00', $horaInicio),
+                    'hora_fin' => sprintf('%02d:00', $horaFin),
                     'profesor' => $profesores[array_rand($profesores)],
-                    'cupo_maximo' => 30,
-                    'cupo_disponible' => 30,
-                    'estado' => true,
+                    'salon' => 'Salón ' . rand(100, 500),
+                    'cupo_maximo_estudiante' => 20,
+                    'cupo_disponible_estudiante' => 20,
+                    'cupo_maximo_tercero' => 10,
+                    'cupo_disponible_tercero' => 10,
+                    'activo' => true,
                 ]);
             }
         }

@@ -15,11 +15,12 @@ return new class extends Migration
         Schema::create('cursos', function (Blueprint $table){
 
             $table->id();
+            $table->string('codigo', 20)->unique()->nullable();
             $table->string('nombre');
             $table->enum('tipo_curso', ['Deporte formativo', 'Arte y cultura', 'Catedra Santiaguina']);
             $table->text('descripcion')->nullable();
             $table->string('imagen')->nullable();
-            $table->boolean('estado')->default(true);
+            $table->boolean('activo')->default(true);
             $table->timestamps();
 
         });

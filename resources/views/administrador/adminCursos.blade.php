@@ -142,7 +142,7 @@
                 </div>
                 <div class="modal-form-group">
                     <label>Estado Inicial</label>
-                    <select name="estado">
+                    <select name="activo">
                         <option value="1">Activo (Visible para estudiantes)</option>
                         <option value="0">Inactivo (Oculto)</option>
                     </select>
@@ -172,7 +172,9 @@
                         <div class="modal-form-group"><label>Profesor</label><input type="text" name="profesor" placeholder="Nombre prof."></div>
                         <div class="modal-form-group"><label>Hora Inicio</label><input type="time" name="hora_inicio"></div>
                         <div class="modal-form-group"><label>Hora Fin</label><input type="time" name="hora_fin"></div>
-                        <div class="modal-form-group"><label>Cupo Max.</label><input type="number" name="cupo_maximo" value="20"></div>
+                        <div class="modal-form-group"><label>Salón</label><input type="text" name="salon" placeholder="Ej: Salón 1"></div>
+                        <div class="modal-form-group"><label>Cupo Estudiantes</label><input type="number" name="cupo_maximo_estudiante" value="20"></div>
+                        <div class="modal-form-group"><label>Cupo Terceros</label><input type="number" name="cupo_maximo_tercero" value="5"></div>
                         <button type="submit" class="btn-inscribir-horario" style="grid-column: span 2;">Agregar Horario</button>
                     </form>
                 </div>
@@ -210,7 +212,8 @@
                 div.innerHTML = `
                     <div class="horario-info">
                         <div class="horario-day-time"><span>${h.dia}</span> | <span>${h.hora_inicio.substring(0,5)} - ${h.hora_fin.substring(0,5)}</span></div>
-                        <div class="horario-profesor">Prof. ${h.profesor || 'N/A'} • ${h.cupo_disponible}/${h.cupo_maximo} cupos</div>
+                        <div class="horario-profesor">Prof. ${h.profesor || 'N/A'} • Salón: ${h.salon || 'N/A'}</div>
+                        <div class="horario-profesor" style="font-size: 0.75rem; color: var(--muted-foreground);">Est: ${h.cupo_disponible_estudiante}/${h.cupo_maximo_estudiante} | Ter: ${h.cupo_disponible_tercero}/${h.cupo_maximo_tercero}</div>
                     </div>
                     <button class="btn-delete" onclick="deleteHorario(${h.id}, ${cursoId})">Eliminar</button>
                 `;
@@ -227,7 +230,9 @@
         document.getElementById('formAddHorario').onsubmit = async (e) => {
             e.preventDefault();
             const formData = new FormData(e.target);
-            formData.append('cupo_disponible', formData.get('cupo_maximo'));
+            formData.append('cupo_disponible_estudiante', formData.get('cupo_maximo_estudiante'));
+            formData.append('cupo_disponible_tercero', formData.get('cupo_maximo_tercero'));
+            formData.append('activo', 1);
             const res = await fetch('/admin/horarios', { method: 'POST', body: formData, headers: { 'Accept': 'application/json' }});
             if(res.ok) loadAdminHorarios(document.getElementById('currentCursoId').value);
         };
