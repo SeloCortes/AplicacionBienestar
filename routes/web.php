@@ -32,6 +32,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Rutas para ver lista de cursos y horarios.
     Route::get('/cursos', [CursosController::class , 'index'])->name('cursos.index');
+    Route::get('/mis-cursos', [CursosController::class , 'misCursos'])->name('cursos.mis-cursos');
     Route::get('/cursos/{id}/horarios', [CursosController::class , 'horarios']);
 
 

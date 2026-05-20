@@ -26,6 +26,19 @@ class CursosController extends Controller
         return response()->view('cursos.student', compact('cursos', 'userInscriptions'));
     }
 
+    // Método para mostrar la vista de los cursos inscritos por el usuario
+    public function misCursos()
+    {
+        $userInscriptions = [];
+        if (auth()->check()) {
+            $userInscriptions = Inscripcion::where('usuario_id', auth()->id())
+                ->with('horario.curso')
+                ->get();
+            return response()->view('cursos.misCursos', compact('userInscriptions'));
+        }
+        return redirect('/login');
+    }
+
     // Método para obtener horarios de un curso específico
     public function horarios($cursoId)
     {

@@ -33,6 +33,15 @@
                     </div>
                 </a>
 
+                <nav class="student-nav" style="display: flex; gap: 1.5rem; margin-left: 2rem;">
+                    <a href="{{ route('cursos.index') }}" class="nav-link active"
+                        style="text-decoration: none; color: var(--primary); font-weight: 700; border-bottom: 2px solid var(--primary); padding-bottom: 4px;">Explorar
+                        Cursos</a>
+                    <a href="{{ route('cursos.mis-cursos') }}" class="nav-link"
+                        style="text-decoration: none; color: var(--muted-foreground); font-weight: 500; transition: all 0.2s;">Mis
+                        Cursos</a>
+                </nav>
+
                 <div class="header-actions">
                     <div class="courses-badge">
                         <span class="badge-dot"></span>
@@ -181,6 +190,20 @@
 
                                 <div class="courses-grid">
                                     @foreach ($cursosGrupo as $curso)
+                                        @php
+                                            $inscritoEnEste = false;
+                                            $inscritoEnCategoria = false;
+                                            foreach($userInscriptions as $ins) {
+                                                if($ins->horario && $ins->horario->curso) {
+                                                    if($ins->horario->curso->id === $curso->id) {
+                                                        $inscritoEnEste = true;
+                                                    }
+                                                    if($ins->horario->curso->tipo_curso === $categoria) {
+                                                        $inscritoEnCategoria = true;
+                                                    }
+                                                }
+                                            }
+                                        @endphp
                                         <article class="course-card" data-category="{{ $categoria }}">
                                             <div class="card-image card-image--{{ $config['color'] }}">
                                                 @if ($curso->imagen)
@@ -222,21 +245,19 @@
                                                     <p class="card-description">{{ $curso->descripcion }}</p>
                                                 @endif
                                                 <div class="card-actions">
-                                                    <button type="button" class="btn-inscribir" data-curso-id="{{ $curso->id }}">
+                                                    <button type="button" class="btn-inscribir" data-curso-id="{{ $curso->id }}"
+                                                        {{ ($inscritoEnCategoria && !$inscritoEnEste) ? 'disabled style=opacity:0.5;cursor:not-allowed;' : '' }}>
                                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                            <path d="M12 5v14" />
-                                                            <path d="M5 12h14" />
+                                                            @if($inscritoEnEste)
+                                                                <path d="M20 6L9 17l-5-5"/>
+                                                            @else
+                                                                <path d="M12 5v14" />
+                                                                <path d="M5 12h14" />
+                                                            @endif
                                                         </svg>
-                                                        <span>Inscribirse</span>
+                                                        <span>{{ $inscritoEnEste ? 'Inscrito' : ($inscritoEnCategoria ? 'Inscrito en otro curso' : 'Inscribirse') }}</span>
                                                     </button>
-                                                    <button type="button" class="btn-info" data-curso-id="{{ $curso->id }}"
-                                                        aria-label="Ver detalles">
-                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                            <circle cx="12" cy="12" r="10" />
-                                                            <path d="M12 16v-4" />
-                                                            <path d="M12 8h.01" />
-                                                        </svg>
-                                                    </button>
+
                                                 </div>
                                             </div>
                                         </article>
@@ -435,15 +456,15 @@
         const modalCursoNombre = document.getElementById('modalCursoNombre');
         const modalCursoCategoria = document.getElementById('modalCursoCategoria');
 
-        function openModal(cursoId, cursoNombre, cursoCategoria) {
-            modalCursoNombre.textContent = cursoNombre;
+        function openModal(cursoId, cursoNombre, cursoCategoria, cursoCodigo) {
+            modalCursoNombre.textContent = cursoNombre + (cursoCodigo ? ` (${cursoCodigo})` : '');
             modalCursoCategoria.textContent = cursoCategoria;
             modal.style.display = 'flex';
             horariosList.innerHTML = '';
             modalLoading.style.display = 'flex';
             modalError.style.display = 'none';
 
-            // Cargar horarios vía AJAX (usando la ruta que ya tienes)
+            // Cargar horarios vía AJAX
             fetch(`/cursos/${cursoId}/horarios`, {
                 headers: { 'Accept': 'application/json' }
             })
@@ -459,19 +480,25 @@
                         return;
                     }
 
+                    // Crear el HTML para cada horario
                     horarios.forEach(h => {
+                        // Verificar si el horario no tiene cupos disponibles
                         const isFull = h.cupo_disponible <= 0;
+                        // Verificar si el usuario ya esta inscrito en ESTE horario
                         const userEnrollment = userInscriptions.find(ins => ins.horario_id === h.id);
+                        // Si el usuario ya esta inscrito en ESTE horario
                         const isEnrolledInThis = !!userEnrollment;
-                        
+
                         // Verificar si el usuario ya esta inscrito en OTRO curso de esta misma categoría
-                        const isEnrolledInCategory = userInscriptions.some(ins => 
+                        const enrollmentInCategory = userInscriptions.find(ins =>
                             ins.horario && ins.horario.curso && ins.horario.curso.tipo_curso === cursoCategoria && ins.horario_id !== h.id
                         );
 
+                        // Crear el item del horario
                         const item = document.createElement('div');
                         item.className = 'horario-item';
-                        
+
+                        // Crear el botón de acción
                         let buttonHtml = '';
                         if (isEnrolledInThis) {
                             buttonHtml = `
@@ -482,7 +509,13 @@
                                 </button>
                             `;
                         } else {
-                            const disabledReason = isFull ? 'Agotado' : (isEnrolledInCategory ? 'Ya inscrito en categoría' : '');
+                            let disabledReason = '';
+                            if (isFull) {
+                                disabledReason = 'Agotado';
+                            } else if (enrollmentInCategory) {
+                                disabledReason = `Inscrito en otro horario`;
+                            }
+
                             buttonHtml = `
                                 <button type="button" 
                                         class="btn-inscribir-horario" 
@@ -506,9 +539,7 @@
                                 </svg>
                                 <span>Prof. ${h.profesor || 'Por asignar'}</span>
                             </div>
-                            <span class="horario-cupos ${isFull ? 'horario-cupos--full' : 'horario-cupos--available'}">
-                                ${isEnrolledInThis ? 'Tu horario' : h.cupo_disponible + ' cupos disponibles'}
-                            </span>
+                            <span class="horario-cupos ${isFull ? 'horario-cupos--full' : 'horario-cupos--available'}">${h.cupo_disponible + ' cupos disponibles'}</span>
                         </div>
                         ${buttonHtml}
                     `;
@@ -628,14 +659,21 @@
             btn.addEventListener('click', function () {
                 const cursoId = this.dataset.cursoId;
                 const cursoCard = this.closest('.course-card');
-                const cursoNombre = cursoCard.querySelector('.card-title').textContent;
+
+                // Get name by removing the codigo span if it exists, or just get text
+                const titleNode = cursoCard.querySelector('.card-title');
+                const cursoNombre = titleNode.childNodes[0].textContent.trim();
+
+                const spanCodigo = titleNode.querySelector('span');
+                const cursoCodigo = spanCodigo ? spanCodigo.textContent.replace(/[()]/g, '') : '';
+
                 const cursoCategoria = cursoCard.querySelector('.card-badge').textContent;
 
                 // Animacion de feedback
                 gsap.to(this, { scale: 0.95, duration: 0.1, yoyo: true, repeat: 1 });
 
                 // Abrir el modal con los datos
-                openModal(cursoId, cursoNombre, cursoCategoria);
+                openModal(cursoId, cursoNombre, cursoCategoria, cursoCodigo);
             });
         });
 

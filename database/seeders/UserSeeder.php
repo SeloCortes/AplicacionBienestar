@@ -32,7 +32,7 @@ class UserSeeder extends Seeder
                 ]
             );
         }
-/*
+
         // Estudiantes (Identificaciones 2001 - 2010)
         $estudiantes = [
             ['id' => 2001, 'nombre' => 'Juan David Perez', 'correo' => 'juan.perez@estudiante.edu.co', 'tel' => '3001234567', 'gen' => 'Masculino'],
@@ -70,6 +70,6 @@ class UserSeeder extends Seeder
                 'genero' => $ter['gen'],
             ]);
         }
- */    }
+     }
        
 }

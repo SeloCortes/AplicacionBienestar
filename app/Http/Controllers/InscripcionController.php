@@ -54,6 +54,21 @@ class InscripcionController extends Controller
                 return response()->json(['message' => 'Usuario ya se encuentra inscripto a este horario'], 400);
             }
 
+            // Validar cruce de horarios
+            $cruceHorario = Inscripcion::where('usuario_id', $user->id)
+                ->whereHas('horario', function ($query) use ($horario) {
+                    $query->where('dia', $horario->dia)
+                          ->where('hora_inicio', '<', $horario->hora_fin)
+                          ->where('hora_fin', '>', $horario->hora_inicio);
+                })
+                ->exists();
+
+            if ($cruceHorario) {
+                return response()->json([
+                    'message' => "Se presenta un cruce de horarios con otro curso al que ya estás inscrito el dia {$horario->dia}"
+                ], 400);
+            }
+
             // validacion por si el usuario ya esta inscripto a otro curso del mismo tipo (solo se permite una inscripcion por tipo)
             $categoria = $horario->curso->tipo_curso;
 
