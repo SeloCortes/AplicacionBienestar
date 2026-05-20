@@ -240,7 +240,7 @@
                                                 <span class="card-badge card-badge--{{ $config['color'] }}">{{ $categoria }}</span>
                                             </div>
                                             <div class="card-body">
-                                                <h3 class="card-title">{{ $curso->nombre }}</h3>
+                                                <h3 class="card-title">{{ $curso->nombre }} @if($curso->codigo) <span style="font-size:0.75em;color:var(--muted-foreground)">({{ $curso->codigo }})</span> @endif</h3>
                                                 @if ($curso->descripcion)
                                                     <p class="card-description">{{ $curso->descripcion }}</p>
                                                 @endif
@@ -533,12 +533,12 @@
                                 <span class="text-slate-300">|</span>
                                 <span>${h.hora_inicio.substring(0, 5)} - ${h.hora_fin.substring(0, 5)}</span>
                             </div>
-                            <div class="horario-profesor">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                                </svg>
-                                <span>Prof. ${h.profesor || 'Por asignar'}</span>
-                            </div>
+                             <div class="horario-profesor">
+                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5">
+                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                                 </svg>
+                                 <span>Salón: ${h.salon || 'N/A'} |  Prof. ${h.profesor || 'Por asignar'}</span>
+                             </div>
                             <span class="horario-cupos ${isFull ? 'horario-cupos--full' : 'horario-cupos--available'}">${h.cupo_disponible + ' cupos disponibles'}</span>
                         </div>
                         ${buttonHtml}

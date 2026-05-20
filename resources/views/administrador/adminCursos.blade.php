@@ -173,7 +173,7 @@
                                             <p class="card-description">{{ $curso->descripcion }}</p>
                                             <div class="admin-controls">
                                                 <button type="button" class="btn-edit btnManageHorarios"
-                                                    data-curso-id="{{ $curso->id }}" data-curso-nombre="{{ $curso->nombre }}">
+                                                    data-curso-id="{{ $curso->id }}" data-curso-nombre="{{ $curso->nombre }}" data-curso-codigo="{{ $curso->codigo }}">
                                                     Horarios
                                                 </button>
                                                 <button type="button" class="btn-edit" style="background:#e0f2fe; color:#0369a1;"
@@ -391,14 +391,19 @@
         document.querySelectorAll('.btnManageHorarios').forEach(btn => {
             btn.onclick = function () {
                 const id = this.dataset.cursoId;
+                const codigo = this.dataset.cursoCodigo || 'N/A';
                 document.getElementById('currentCursoId').value = id;
+                document.getElementById('currentCursoId').dataset.codigo = codigo;
                 document.getElementById('adminModalCursoNombre').textContent = this.dataset.cursoNombre;
-                loadAdminHorarios(id);
+                loadAdminHorarios(id, codigo);
                 document.getElementById('horariosAdminModal').style.display = 'flex';
             }
         });
 
-        async function loadAdminHorarios(cursoId) {
+        async function loadAdminHorarios(cursoId, codigo) {
+            if (!codigo) {
+                codigo = document.getElementById('currentCursoId').dataset.codigo || 'N/A';
+            }
             const list = document.getElementById('adminHorariosList');
             list.innerHTML = 'Cargando...';
             const res = await fetch(`/cursos/${cursoId}/horarios`);
@@ -410,7 +415,7 @@
                 div.innerHTML = `
                     <div class="horario-info">
                         <div class="horario-day-time"><span>${h.dia}</span> | <span>${h.hora_inicio.substring(0, 5)} - ${h.hora_fin.substring(0, 5)}</span></div>
-                        <div class="horario-profesor">Prof. ${h.profesor || 'N/A'} • Salón: ${h.salon || 'N/A'}</div>
+                        <div class="horario-profesor">Código: ${codigo} • Salón: ${h.salon || 'N/A'} • Prof. ${h.profesor || 'N/A'}</div>
                         <div class="horario-profesor" style="font-size: 0.75rem; color: var(--muted-foreground);">Est: ${h.cupo_disponible_estudiante}/${h.cupo_maximo_estudiante} | Ter: ${h.cupo_disponible_tercero}/${h.cupo_maximo_tercero}</div>
                     </div>
                     <div class="admin-controls" style="margin-top:0;">
