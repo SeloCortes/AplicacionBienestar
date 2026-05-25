@@ -13,6 +13,8 @@
     <link
         href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
         rel="stylesheet">
+    {{-- Driver.js para el Tour Guiado --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css"/>
 </head>
 
 <body>
@@ -255,7 +257,7 @@
                                                                 <path d="M5 12h14" />
                                                             @endif
                                                         </svg>
-                                                        <span>{{ $inscritoEnEste ? 'Inscrito' : ($inscritoEnCategoria ? 'Inscrito en otro curso' : 'Inscribirse') }}</span>
+                                                        <span>{{ $inscritoEnEste ? 'Inscrito' : ($inscritoEnCategoria ? 'Inscrito en otro curso' : 'Ver horarios') }}</span>
                                                     </button>
 
                                                 </div>
@@ -336,6 +338,8 @@
         const userInscriptions = @json($userInscriptions);
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    {{-- Driver.js Script --}}
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
     <script>
         // ── Debug Info ──
         console.log("Cursos cargados desde Laravel:", {{ $cursos->count() }});
@@ -386,9 +390,75 @@
                     y: 20,
                     stagger: 0.03,
                     duration: 0.5
-                }, "-=0.3");
+                }, "-=0.3").add(() => {
+                    // Iniciar el tour después de que las animaciones terminen
+                    startOnboardingTour();
+                });
             }
         });
+
+        // ── Onboarding Tour (Vista Guiada) ──
+        function startOnboardingTour() {
+            // Solo mostrar el tour si es la primera vez (opcional, usando localStorage)
+            if (localStorage.getItem('onboarding_completed')) return;
+
+            const driver = window.driver.js.driver;
+            const driverObj = driver({
+                showProgress: true,
+                steps: [
+                    { 
+                        element: '.logo-link', 
+                        popover: { 
+                            title: '¡Bienvenido(a)!', 
+                            description: 'Este es el portal de Bienestar USC. Aquí podrás inscribirte a tus cursos favoritos.', 
+                            side: "bottom", 
+                            align: 'start' 
+                        } 
+                    },
+                    { 
+                        element: '.filter-tabs', 
+                        popover: { 
+                            title: 'Filtra tus intereses', 
+                            description: 'Usa estas pestañas para ver solo los cursos de Deporte, Arte o Cátedra.', 
+                            side: "bottom", 
+                            align: 'center' 
+                        } 
+                    },
+                    { 
+                        element: '.course-card', 
+                        popover: { 
+                            title: 'Cursos Disponibles', 
+                            description: 'Cada tarjeta muestra la información del curso. Haz clic en el botón para ver los horarios.', 
+                            side: "top", 
+                            align: 'center' 
+                        } 
+                    },
+                    { 
+                        element: '.user-badge', 
+                        popover: { 
+                            title: 'Tu Perfil', 
+                            description: 'Aquí puedes confirmar que has ingresado con tu cuenta.', 
+                            side: "bottom", 
+                            align: 'end' 
+                        } 
+                    },
+                    { 
+                        element: '.logout-btn', 
+                        popover: { 
+                            title: 'Cerrar Sesión', 
+                            description: 'Cuando termines, no olvides cerrar tu sesión por seguridad.', 
+                            side: "bottom", 
+                            align: 'end' 
+                        } 
+                    }
+                ],
+                onDestroyed: () => {
+                    localStorage.setItem('onboarding_completed', 'true');
+                }
+            });
+
+            driverObj.drive();
+        }
 
         // ── Filter Functionality ──
         const filterBtns = document.querySelectorAll('.filter-btn');
