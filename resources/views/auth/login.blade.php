@@ -24,11 +24,11 @@
                 <header class="login-header">
                     <div class="logo-row">
                         <div class="logo-icon">
-                            <img src="{{ asset('images/Logo_Universidad-Santiago-de-Cali.png') }}" alt="Logo USC">
+                            <img src="{{ asset('images/Logo_Universidad-Santiago-de-Cali.png') }}" alt="Logo USC" width="56" height="56">
                         </div>
                         <span class="logo-text">Bienestar USC</span>
                     </div>
-                    <h1>Bienvenido de nuevo</h1>
+                    <h1>Bienvenido</h1>
                     <p>Inicia sesion para inscribirte a cursos y actividades de bienestar.</p>
                 </header>
 
