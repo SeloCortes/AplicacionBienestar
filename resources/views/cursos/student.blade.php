@@ -3,9 +3,13 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#3d8b7a">
     <title>Bienestar USC - Cursos</title>
+    {{-- SweetAlert2 --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="{{ asset('css/student.css') }}">
     {{-- Google Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,14 +28,11 @@
             <div class="header-inner">
                 <a href="{{ url('/cursos') }}" class="logo-link">
                     <div class="logo-icon">
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                            <path
-                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                        </svg>
+                        <img src="{{ asset('images/Logo_Universidad-Santiago-de-Cali.png') }}" alt="Logo USC">
                     </div>
                     <div class="logo-text">
-                        <span class="logo-title">Bienestar USC</span>
-                        <span class="logo-subtitle">Oferta de cursos</span>
+                        <span class="logo-title">SIBIU</span>
+                        <span class="logo-subtitle">Bienestar USC</span>
                     </div>
                 </a>
 
@@ -405,12 +406,15 @@
             const driver = window.driver.js.driver;
             const driverObj = driver({
                 showProgress: true,
+                nextBtnText: 'Siguiente',
+                prevBtnText: 'Anterior',
+                doneBtnText: 'Finalizar',
                 steps: [
                     { 
                         element: '.logo-link', 
                         popover: { 
-                            title: '¡Bienvenido(a)!', 
-                            description: 'Este es el portal de Bienestar USC. Aquí podrás inscribirte a tus cursos favoritos.', 
+                            title: 'SIBIU', 
+                            description: 'Bienvenido al Sistema de Inscripción de Bienestar Universitario - SIBIU. Aquí podrás inscribirte a tus cursos favoritos.', 
                             side: "bottom", 
                             align: 'start' 
                         } 
@@ -527,6 +531,7 @@
         const modalCursoCategoria = document.getElementById('modalCursoCategoria');
 
         function openModal(cursoId, cursoNombre, cursoCategoria, cursoCodigo) {
+            document.body.style.overflow = 'hidden'; // Bloquear scroll del fondo
             modalCursoNombre.textContent = cursoNombre + (cursoCodigo ? ` (${cursoCodigo})` : '');
             modalCursoCategoria.textContent = cursoCategoria;
             modal.style.display = 'flex';
@@ -641,6 +646,7 @@
 
         function closeModal() {
             modal.style.display = 'none';
+            document.body.style.overflow = ''; // Restaurar scroll del fondo
         }
 
         closeModalBtn.addEventListener('click', closeModal);
@@ -650,6 +656,28 @@
 
         // Función para procesar la inscripción
         async function inscribirEstudiante(horarioId, btnElement) {
+            // Alerta de confirmación con advertencia de horario académico
+            const result = await Swal.fire({
+                title: '¿Confirmar inscripción?',
+                text: 'Asegúrate de que este horario no se cruce con tus clases de la carrera (pregrado o posgrado).',
+                icon: 'warning',
+                showCancelButton: true,
+                showCloseButton: true, // Añade la X para cerrar
+                confirmButtonColor: '#0c1381',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Sí, inscribirme',
+                cancelButtonText: 'Revisar horario académico',
+                heightAuto: false
+            });
+
+            if (result.dismiss === Swal.DismissReason.cancel) {
+                // Si le da a "Revisar horario académico", abrir SINU en pestaña nueva
+                window.open('https://sinu.usc.edu.co:8443/sinugwt/', '_blank');
+                return;
+            }
+
+            if (!result.isConfirmed) return;
+
             const originalText = btnElement.textContent;
             btnElement.disabled = true;
             btnElement.textContent = 'Procesando...';
@@ -663,23 +691,52 @@
                         'Accept': 'application/json'
                     },
                     body: JSON.stringify({
-                        horario_id: horarioId
+                        horario_id: horarioId,
+                        user_id: {{ auth()->id() }}
                     })
                 });
 
                 const data = await response.json();
 
                 if (response.ok) {
-                    alert('¡Inscripción exitosa!');
-                    location.reload(); // Recargamos para actualizar cupos
+                    await Swal.fire({
+                        title: '¡Inscripción exitosa!',
+                        text: 'Te has inscrito correctamente al curso.',
+                        icon: 'success',
+                        confirmButtonColor: '#0c1381',
+                        heightAuto: false
+                    });
+                    location.reload();
+                } else if (response.status === 429) {
+                    Swal.fire({
+                        title: 'Espera un momento',
+                        text: data.message,
+                        icon: 'info',
+                        confirmButtonColor: '#0c1381',
+                        heightAuto: false
+                    });
+                    btnElement.disabled = false;
+                    btnElement.textContent = originalText;
                 } else {
-                    alert(data.message || 'Error al inscribirse');
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.message || 'No se pudo procesar la inscripción.',
+                        icon: 'error',
+                        confirmButtonColor: '#0c1381',
+                        heightAuto: false
+                    });
                     btnElement.disabled = false;
                     btnElement.textContent = originalText;
                 }
             } catch (error) {
                 console.error(error);
-                alert('Error de conexión');
+                Swal.fire({
+                    title: 'Error de conexión',
+                    text: 'No se pudo contactar con el servidor.',
+                    icon: 'error',
+                    confirmButtonColor: '#0c1381',
+                    heightAuto: false
+                });
                 btnElement.disabled = false;
                 btnElement.textContent = originalText;
             }
@@ -687,7 +744,19 @@
 
         // Función para cancelar la inscripción
         async function desinscribirEstudiante(inscripcionId, btnElement) {
-            if (!confirm('¿Seguro que quieres cancelar tu inscripción?')) return;
+            const result = await Swal.fire({
+                title: '¿Estás seguro?',
+                text: '¿Realmente quieres cancelar tu inscripción a este curso?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Sí, cancelar',
+                cancelButtonText: 'No, mantener',
+                heightAuto: false
+            });
+
+            if (!result.isConfirmed) return;
 
             const originalText = btnElement.textContent;
             btnElement.disabled = true;
@@ -705,21 +774,44 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    alert('Inscripción cancelada correctamente');
+                    await Swal.fire({
+                        title: 'Cancelada',
+                        text: 'Tu inscripción ha sido cancelada exitosamente.',
+                        icon: 'success',
+                        confirmButtonColor: '#0c1381',
+                        heightAuto: false
+                    });
                     location.reload();
                 } else if (response.status === 429) {
-                    // Manejar el error de tiempo de espera (1 minuto)
-                    alert(data.message);
+                    Swal.fire({
+                        title: 'Espera un momento',
+                        text: data.message,
+                        icon: 'info',
+                        confirmButtonColor: '#0c1381',
+                        heightAuto: false
+                    });
                     btnElement.disabled = false;
                     btnElement.textContent = originalText;
                 } else {
-                    alert(data.message || 'Error al cancelar');
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.message || 'No se pudo cancelar la inscripción.',
+                        icon: 'error',
+                        confirmButtonColor: '#0c1381',
+                        heightAuto: false
+                    });
                     btnElement.disabled = false;
                     btnElement.textContent = originalText;
                 }
             } catch (error) {
                 console.error(error);
-                alert('Error de conexión');
+                Swal.fire({
+                    title: 'Error de conexión',
+                    text: 'No se pudo contactar con el servidor.',
+                    icon: 'error',
+                    confirmButtonColor: '#0c1381',
+                    heightAuto: false
+                });
                 btnElement.disabled = false;
                 btnElement.textContent = originalText;
             }

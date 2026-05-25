@@ -92,22 +92,19 @@ a { color: inherit; text-decoration: none; }
 .logo-link:hover { transform: scale(1.02); }
 
 .logo-icon {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 3.5rem;
+    height: 3.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+    background: transparent;
     border-radius: var(--radius-md);
-    box-shadow: 0 4px 12px rgba(12, 19, 129, 0.3);
 }
 
-.logo-icon svg {
-    width: 1.25rem;
-    height: 1.25rem;
-    fill: none;
-    stroke: white;
-    stroke-width: 2;
+.logo-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .logo-text { display: flex; flex-direction: column; }
@@ -808,8 +805,40 @@ a { color: inherit; text-decoration: none; }
     .logout-btn span { display: inline; }
     .hero-text h1 { font-size: 2rem; }
     .courses-grid { grid-template-columns: repeat(2, 1fr); }
-    .footer-inner { flex-direction: row; justify-content: space-between; }
 }
+
+@media (max-width: 640px) {
+    .filter-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+        -webkit-overflow-scrolling: touch;
+        justify-content: flex-start;
+    }
+    
+    .filter-btn {
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+    
+    .hero-text h1 {
+        font-size: 1.75rem;
+    }
+    
+    .course-card {
+        max-width: 100%;
+    }
+    
+    .main-header {
+        padding: 0.75rem 1rem;
+    }
+    
+    .logo-subtitle {
+        display: none;
+    }
+}
+    .footer-inner { flex-direction: row; justify-content: space-between; }
+
 
 @media (min-width: 1024px) {
     .courses-grid { grid-template-columns: repeat(3, 1fr); }

@@ -2,9 +2,13 @@
 <html lang="es">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#3d8b7a">
     <title>Bienestar USC - Iniciar Sesion</title>
+    {{-- SweetAlert2 --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
     {{-- Google Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,9 +24,7 @@
                 <header class="login-header">
                     <div class="logo-row">
                         <div class="logo-icon">
-                            <svg viewBox="0 0 24 24" aria-hidden="true">
-                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                            </svg>
+                            <img src="{{ asset('images/Logo_Universidad-Santiago-de-Cali.png') }}" alt="Logo USC">
                         </div>
                         <span class="logo-text">Bienestar USC</span>
                     </div>
@@ -116,7 +118,7 @@
                 {{-- Replace src with your actual campus image path --}}
                 <img
                     class="brand-panel-img"
-                    src="{{ asset('images/login-bg.jpg') }}"
+                    src="{{ asset('images/login-bg.webp') }}"
                     alt="Campus universitario con estudiantes en un entorno de bienestar"
                 >
                 <div class="brand-panel-overlay"></div>

@@ -3,9 +3,15 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0c1381">
     <title>Panel Admin - Gestión de Cursos</title>
+    {{-- Driver.js para el Tour Guiado --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css"/>
+    {{-- SweetAlert2 --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="{{ asset('css/student.css') }}">
     {{-- Estilos extra para admin --}}
     <style>
@@ -93,10 +99,7 @@
             <div class="header-inner">
                 <div class="logo-link">
                     <div class="logo-icon">
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                            <path
-                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                        </svg>
+                        <img src="{{ asset('images/Logo_Universidad-Santiago-de-Cali.png') }}" alt="Logo USC">
                     </div>
                     <div class="logo-text">
                         <span class="logo-title">Bienestar USC</span>
@@ -382,10 +385,45 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    {{-- Driver.js Script --}}
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
     <script>
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
+        
         document.getElementById('btnNewCourse').onclick = () => document.getElementById('courseModal').style.display = 'flex';
+
+        // ── Onboarding Tour para Admin ──
+        window.addEventListener('load', () => {
+            if (localStorage.getItem('admin_onboarding_completed')) return;
+
+            const driver = window.driver.js.driver;
+            const driverObj = driver({
+                showProgress: true,
+                nextBtnText: 'Siguiente',
+                prevBtnText: 'Anterior',
+                doneBtnText: 'Entendido',
+                steps: [
+                    { 
+                        element: '.logo-link', 
+                        popover: { title: 'Panel Administrativo', description: 'Desde aquí puedes gestionar toda la oferta académica de Bienestar.', side: "bottom", align: 'start' } 
+                    },
+                    { 
+                        element: '.admin-nav', 
+                        popover: { title: 'Navegación', description: 'Cambia rápidamente entre la gestión de Cursos y los Informes de inscritos.', side: "bottom", align: 'center' } 
+                    },
+                    { 
+                        element: '.btn-add-course', 
+                        popover: { title: 'Crear Cursos', description: 'Usa este botón para añadir un nuevo curso al sistema (deporte, arte o cátedra).', side: "left", align: 'center' } 
+                    },
+                    { 
+                        element: '.course-card:first-child', 
+                        popover: { title: 'Gestión de Cursos', description: 'En cada tarjeta puedes gestionar horarios o eliminar el curso por completo.', side: "top", align: 'center' } 
+                    }
+                ],
+                onDestroyed: () => localStorage.setItem('admin_onboarding_completed', 'true')
+            });
+            driverObj.drive();
+        });
 
         // Lógica para gestionar horarios
         document.querySelectorAll('.btnManageHorarios').forEach(btn => {
@@ -491,8 +529,81 @@
             document.getElementById('editHorarioModal').style.display = 'flex';
         }
 
-        async function deleteCourse(id) { if (confirm('¿Seguro?')) { await fetch(`/admin/cursos/${id}`, { method: 'DELETE', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } }); location.reload(); } }
-        async function deleteHorario(id, cursoId) { if (confirm('¿Eliminar horario?')) { await fetch(`/admin/horarios/${id}`, { method: 'DELETE', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } }); loadAdminHorarios(cursoId); } }
+        async function deleteCourse(id) {
+            const result = await Swal.fire({
+                title: '¿Estás seguro?',
+                text: "Esta acción eliminará el curso y todos sus horarios asociados permanentemente.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    const res = await fetch(`/admin/cursos/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        }
+                    });
+                    if (res.ok) {
+                        await Swal.fire({
+                            title: 'Eliminado',
+                            text: 'El curso ha sido eliminado correctamente.',
+                            icon: 'success',
+                            confirmButtonColor: '#0c1381'
+                        });
+                        location.reload();
+                    } else {
+                        throw new Error('Error al eliminar');
+                    }
+                } catch (error) {
+                    Swal.fire('Error', 'No se pudo eliminar el curso.', 'error');
+                }
+            }
+        }
+
+        async function deleteHorario(id, cursoId) {
+            const result = await Swal.fire({
+                title: '¿Eliminar horario?',
+                text: "Se eliminarán también las inscripciones de este horario.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    const res = await fetch(`/admin/horarios/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        }
+                    });
+                    if (res.ok) {
+                        await Swal.fire({
+                            title: 'Eliminado',
+                            text: 'El horario ha sido eliminado.',
+                            icon: 'success',
+                            confirmButtonColor: '#0c1381'
+                        });
+                        loadAdminHorarios(cursoId);
+                    } else {
+                        throw new Error('Error al eliminar');
+                    }
+                } catch (error) {
+                    Swal.fire('Error', 'No se pudo eliminar el horario.', 'error');
+                }
+            }
+        }
     </script>
 </body>
 
