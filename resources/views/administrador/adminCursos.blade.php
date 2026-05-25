@@ -311,7 +311,7 @@
             <header class="modal-header">
                 <div class="modal-title-group">
                     <h3 id="adminModalCursoNombre" class="modal-title">Gestionar Horarios</h3>
-                    <p class="modal-subtitle">Añade o elimina turnos para este curso</p>
+                    <p class="modal-subtitle">Añade, edita o elimina horarios para este curso</p>
                 </div>
                 <button type="button" class="modal-close" onclick="closeModal('horariosAdminModal')"><svg
                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -453,7 +453,7 @@
                 div.innerHTML = `
                     <div class="horario-info">
                         <div class="horario-day-time"><span>${h.dia}</span> | <span>${h.hora_inicio.substring(0, 5)} - ${h.hora_fin.substring(0, 5)}</span></div>
-                        <div class="horario-profesor">Código: ${codigo} • Salón: ${h.salon || 'N/A'} • Prof. ${h.profesor || 'N/A'}</div>
+                        <div class="horario-profesor">Salón: ${h.salon || 'N/A'} • Prof. ${h.profesor || 'N/A'}</div>
                         <div class="horario-profesor" style="font-size: 0.75rem; color: var(--muted-foreground);">Est: ${h.cupo_disponible_estudiante}/${h.cupo_maximo_estudiante} | Ter: ${h.cupo_disponible_tercero}/${h.cupo_maximo_tercero}</div>
                     </div>
                     <div class="admin-controls" style="margin-top:0;">
