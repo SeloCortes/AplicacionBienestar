@@ -23,13 +23,24 @@ class RegisterUserRequest extends FormRequest
     {
         return [
             'nombre_apellido' => 'required|string|max:255',
-            'identificacion'  => 'required|string|max:50|unique:users,identificacion',
-            'correo'          => 'required|email|unique:users,correo',
+            'identificacion'  => 'required|digits_between:1,20|unique:users,identificacion',
+            'correo'          => 'required|string|email|max:255|unique:users,correo',
             'password'        => 'required|string|min:8|confirmed',
-            'telefono'        => 'nullable|string|max:20',
+            'telefono'        => 'nullable|digits_between:1,10',
             'genero'          => 'nullable|string|max:50',
             'etnia'           => 'nullable|string|max:50',
-            'discapacidad'    => 'boolean',
+            'discapacidad'    => 'nullable|string|max:255',
+            
+            // Rol selector ('Estudiante' or 'Tercero')
+            'rol'             => 'required|string|in:Estudiante,Tercero',
+            
+            // Campos específicos de Estudiante
+            'facultad'        => 'required_if:rol,Estudiante|nullable|string|max:255',
+            'nombre_carrera'  => 'required_if:rol,Estudiante|nullable|string|max:255',
+            'semestre'        => 'required_if:rol,Estudiante|nullable|integer|min:1|max:20',
+            
+            // Campos específicos de Tercero
+            'estamento'       => 'required_if:rol,Tercero|nullable|string|max:255',
         ];
     }
 }

@@ -16,7 +16,6 @@
         .hero-section {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
-            padding: 2rem;
             border-radius: var(--radius-lg);
             margin-bottom: 2rem;
         }
@@ -36,7 +35,7 @@
             flex-direction: column;
             gap: 0.5rem;
             flex: 1;
-            min-width: 200px;
+            min-width: 180px;
         }
         .form-group label {
             font-size: 0.875rem;
@@ -48,6 +47,7 @@
             border-radius: var(--radius-md);
             border: 1px solid var(--border);
             font-family: inherit;
+            background-color: white;
         }
         .btn-filter {
             background: var(--primary);
@@ -58,8 +58,115 @@
             border: none;
             cursor: pointer;
             height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
         
+        /* Stats Dashboard Section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stats-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+        .stats-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+        .stats-card-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: black;
+            padding: 1rem 1.5rem;
+        }
+        .stats-card-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        .stats-card-body {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--muted-foreground);
+            font-weight: 500;
+        }
+        .stat-val {
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 9999px;
+        }
+        .badge-info { background: #e0f2fe; color: #0369a1; }
+        .badge-secondary { background: #f3f4f6; color: #374151; }
+        .badge-danger { background: #fee2e2; color: #b91c1c; }
+        .badge-success { background: #dcfce7; color: #15803d; }
+
+        .stat-faculties {
+            margin-top: 1rem;
+            border-top: 1px solid var(--border);
+            padding-top: 1rem;
+        }
+        .stat-faculties h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--foreground);
+        }
+        .stat-faculties ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        .stat-faculties li {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            padding: 0.25rem 0;
+            border-bottom: 1px dashed var(--border);
+        }
+        .fac-name {
+            color: var(--muted-foreground);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 80%;
+        }
+        .fac-count {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        .no-data {
+            font-size: 0.85rem;
+            color: var(--muted-foreground);
+            font-style: italic;
+            margin: 0;
+        }
+
         .table-container {
             background: white;
             padding: 1.5rem;
@@ -137,10 +244,54 @@
                 <section class="hero-section">
                     <div class="hero-text">
                         <h1>Informes de Inscripciones</h1>
-                        <p>Genera reportes detallados y descárgalos en Excel organizados por tipo de curso.</p>
+                        <p>Genera reportes detallados y descárgalos en Excel.</p>
                     </div>
                 </section>
 
+                <!-- Panel de Estadísticas (3 Columnas) -->
+                <div class="stats-grid">
+                    @foreach ($estadisticas as $tipo => $datos)
+                        <div class="stats-card">
+                            <div class="stats-card-header">
+                                <h3>{{ $tipo }}</h3>
+                            </div>
+                            <div class="stats-card-body">
+                                <div class="stat-row">
+                                    <span class="stat-label">Cursos creados</span>
+                                    <span class="stat-val badge-info">{{ $datos['cursos'] }}</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">Horarios programados</span>
+                                    <span class="stat-val badge-secondary">{{ $datos['horarios'] }}</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">Horarios sin cupos</span>
+                                    <span class="stat-val {{ $datos['horarios_llenos'] > 0 ? 'badge-danger' : 'badge-success' }}">
+                                        {{ $datos['horarios_llenos'] }}
+                                    </span>
+                                </div>
+                                
+                                <div class="stat-faculties">
+                                    <h4>Inscritos por Facultad</h4>
+                                    @if (count($datos['por_facultad']) > 0)
+                                        <ul>
+                                            @foreach ($datos['por_facultad'] as $fac => $cant)
+                                                <li>
+                                                    <span class="fac-name" title="{{ $fac }}">{{ $fac }}</span>
+                                                    <span class="fac-count">{{ $cant }}</span>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @else
+                                        <p class="no-data">Sin inscritos</p>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <!-- Formulario de Filtros -->
                 <form method="GET" action="{{ route('admin.informe.index') }}" class="filter-form">
                     <div class="form-group">
                         <label for="tipo_curso">Tipo de Curso:</label>
@@ -153,7 +304,7 @@
 
                     <div class="form-group">
                         <label for="curso_id">Curso Específico:</label>
-                        <select name="curso_id" id="curso_id">
+                        <select name="curso_id" id="curso_id" onchange="this.form.submit()">
                             <option value="todos">Todos los cursos</option>
                             @foreach ($cursosTipo as $curso)
                                 <option value="{{ $curso->id }}" {{ (string)$cursoId === (string)$curso->id ? 'selected' : '' }}>
@@ -163,9 +314,41 @@
                         </select>
                     </div>
 
-                    <button type="submit" class="btn-filter">Generar Reporte</button>
+                    <div class="form-group">
+                        <label for="estamento">Estamento:</label>
+                        <select name="estamento" id="estamento" onchange="this.form.submit()">
+                            <option value="todos" {{ $estamento == 'todos' ? 'selected' : '' }}>Todos</option>
+                            <option value="Estudiante" {{ $estamento == 'Estudiante' ? 'selected' : '' }}>Estudiante</option>
+                            <option value="Tercero" {{ $estamento == 'Tercero' ? 'selected' : '' }}>Tercero</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="facultad">Facultad:</label>
+                        <select name="facultad" id="facultad" onchange="this.form.submit()">
+                            <option value="todos" {{ $facultad == 'todos' ? 'selected' : '' }}>Todas las facultades</option>
+                            @foreach ($facultades as $fac)
+                                <option value="{{ $fac }}" {{ $facultad == $fac ? 'selected' : '' }}>{{ $fac }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="programa">Programa Académico:</label>
+                        <select name="programa" id="programa" onchange="this.form.submit()">
+                            <option value="todos" {{ $programa == 'todos' ? 'selected' : '' }}>Todos los programas</option>
+                            @foreach ($programas as $prog)
+                                <option value="{{ $prog }}" {{ $programa == $prog ? 'selected' : '' }}>{{ $prog }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <a href="{{ route('admin.informe.index') }}" class="btn-filter" style="background: #f3f4f6; color: #374151; text-decoration: none; border: 1px solid var(--border);">
+                        Limpiar Filtros
+                    </a>
                 </form>
 
+                <!-- Contenedor de la Tabla -->
                 <div class="table-container">
                     <table id="informeTable" class="display nowrap" style="width:100%">
                         <thead>
@@ -176,6 +359,7 @@
                                 <th>Documento</th>
                                 <th>Teléfono</th>
                                 <th>Correo</th>
+                                <th>Estamento</th>
                                 <th>Facultad</th>
                                 <th>Programa Académico</th>
                                 @foreach ($nombresCursos as $columnaCurso)
@@ -192,6 +376,7 @@
                                     <td>{{ $estudiante['Registre el Número de Documento de identidad'] }}</td>
                                     <td>{{ $estudiante['Teléfono de Contacto'] }}</td>
                                     <td>{{ $estudiante['Correo Electrónico'] }}</td>
+                                    <td>{{ $estudiante['Estamento'] }}</td>
                                     <td>{{ $estudiante['Seleccione la Facultad a la cual pertenece'] }}</td>
                                     <td>{{ $estudiante['Selecciona el Programa Académico'] }}</td>
                                     
@@ -226,7 +411,19 @@
                         extend: 'excelHtml5',
                         text: '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" style="vertical-align: middle; margin-right: 5px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Descargar Excel',
                         className: 'btn-export-excel',
-                        title: 'Reporte_Inscripciones_' + $('#tipo_curso').val().replace(/ /g, '_'),
+                        title: function() {
+                            let filename = 'Reporte_Inscripciones_' + $('#tipo_curso').val().replace(/ /g, '_');
+                            if ($('#curso_id').val() !== 'todos') {
+                                filename += '_' + $('#curso_id option:selected').text().trim().replace(/ /g, '_');
+                            }
+                            if ($('#estamento').val() !== 'todos') {
+                                filename += '_' + $('#estamento').val();
+                            }
+                            if ($('#facultad').val() !== 'todos') {
+                                filename += '_' + $('#facultad').val().replace(/ /g, '_');
+                            }
+                            return filename;
+                        }
                     }
                 ],
                 scrollX: true,

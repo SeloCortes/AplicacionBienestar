@@ -9,6 +9,7 @@ Route::get('/', function () {
 use App\Http\Controllers\Auth\RegisterController;
 
 // Ruta para registro de usuarios
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class , 'store']);
 
 
