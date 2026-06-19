@@ -23,7 +23,7 @@ class CursosController extends Controller
         }
 
         // Retornar la vista con la lista de cursos e inscripciones
-        return response()->view('cursos.student', compact('cursos', 'userInscriptions'));
+        return response()->view('cursos.estudiante', compact('cursos', 'userInscriptions'));
     }
 
     // Método para mostrar la vista de los cursos inscritos por el usuario

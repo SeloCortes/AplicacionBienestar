@@ -199,7 +199,7 @@ class InformesAdminController extends Controller
             }
         }
 
-        return view('admin.informe.informe', compact(
+        return view('administrador.informe', compact(
             'estudiantesPivot', 
             'nombresCursos', 
             'cursosTipo', 
