@@ -173,6 +173,11 @@
         {{-- Main --}}
         <main class="main-content">
             <div class="calendar-container">
+                @if(isset($inscripcionesAbiertas) && !$inscripcionesAbiertas)
+                <div style="background: #fee2e2; color: #b91c1c; padding: 1rem; border-radius: var(--radius-md); text-align: center; margin-bottom: 2rem; font-weight: 600; border: 1px solid #fca5a5;">
+                    Las inscripciones y cancelaciones se encuentran cerradas en este momento.
+                </div>
+                @endif
                 <div id='calendar'></div>
             </div>
         </main>

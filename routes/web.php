@@ -24,6 +24,7 @@ Route::post('/logout', [LoginController::class , 'logout'])->name('logout')->mid
 
 use App\Http\Controllers\Admin\CursosAdminController;
 use App\Http\Controllers\Admin\HorariosAdminController;
+use App\Http\Controllers\Admin\ConfiguracionController;
 use App\Http\Controllers\CursosController;
 use App\Http\Controllers\InscripcionController;
 use App\Http\Controllers\Admin\InformesAdminController;
@@ -56,6 +57,10 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/admin/horarios', [HorariosAdminController::class , 'store']);
             Route::put('/admin/horarios/{id}', [HorariosAdminController::class , 'update']);
             Route::delete('/admin/horarios/{id}', [HorariosAdminController::class , 'destroy']);
+
+            // Configuracion Global
+            Route::get('/admin/configuracion', [ConfiguracionController::class , 'index'])->name('admin.configuracion.index');
+            Route::post('/admin/configuracion', [ConfiguracionController::class , 'update'])->name('admin.configuracion.update');
 
 
             // Informes 

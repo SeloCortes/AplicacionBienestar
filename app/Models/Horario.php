@@ -17,6 +17,7 @@ class Horario extends Model
         'hora_fin',
         'profesor',
         'salon',
+        'codigo',
         'cupo_maximo_estudiante',
         'cupo_disponible_estudiante',
         'cupo_maximo_tercero',

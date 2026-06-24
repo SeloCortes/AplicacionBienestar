@@ -228,6 +228,9 @@
                 <nav class="admin-nav" style="display: flex; gap: 1.5rem; margin-left: 2rem;">
                     <a href="{{ route('admin.cursos.index') }}" class="nav-link {{ request()->routeIs('admin.cursos.index') ? 'active' : '' }}" style="text-decoration: none; color: var(--muted-foreground); font-weight: 500; transition: all 0.2s;">Cursos</a>
                     <a href="{{ route('admin.informe.index') }}" class="nav-link {{ request()->routeIs('admin.informe.index') ? 'active' : '' }}" style="text-decoration: none; color: var(--primary); font-weight: 700; border-bottom: 2px solid var(--primary); padding-bottom: 4px;">Informes</a>
+                    @if(in_array(auth()->user()->administrativo->area ?? '', ['Bienestar Universitario', 'Sistemas']))
+                    <a href="{{ route('admin.configuracion.index') }}" class="nav-link" style="text-decoration: none; color: var(--muted-foreground); font-weight: 500;">Configuración</a>
+                    @endif
                 </nav>
 
                 <div class="header-actions">
@@ -286,8 +289,81 @@
                                         <p class="no-data">Sin inscritos</p>
                                     @endif
                                 </div>
+                                <div style="margin-top: 1rem; text-align: center;">
+                                    <button class="btn-filter" style="width: 100%;" onclick="openDetailsModal('{{ md5($tipo) }}')">Ver Detalles</button>
+                                </div>
                             </div>
                         </div>
+
+                        <!-- Modal for Details -->
+                        <div id="detailsModal_{{ md5($tipo) }}" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; padding: 1rem;">
+                            <div class="modal-container" style="background: white; border-radius: 12px; width: 100%; max-width: 1000px; max-height: 90vh; overflow-y: auto; position: relative;">
+                                <div style="padding: 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                                    <h3 style="margin: 0;">Detalles - {{ $tipo }}</h3>
+                                    <button onclick="closeDetailsModal('{{ md5($tipo) }}')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                                </div>
+                                <div style="padding: 1.5rem;">
+                                    <h4 style="margin-top: 0;">Cursos Inscritos</h4>
+                                    @if(isset($datos['lista_cursos_inscritos']) && count($datos['lista_cursos_inscritos']) > 0)
+                                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 2rem;">
+                                            <thead style="background: #f3f4f6;">
+                                                <tr>
+                                                    <th style="padding: 0.5rem; border: 1px solid var(--border); text-align: left;">Código</th>
+                                                    <th style="padding: 0.5rem; border: 1px solid var(--border); text-align: left;">Nombre</th>
+                                                    <th style="padding: 0.5rem; border: 1px solid var(--border); text-align: left;">Día</th>
+                                                    <th style="padding: 0.5rem; border: 1px solid var(--border); text-align: left;">Rango de Horas</th>
+                                                    <th style="padding: 0.5rem; border: 1px solid var(--border); text-align: left;">Horarios Programados</th>
+                                                    <th style="padding: 0.5rem; border: 1px solid var(--border); text-align: left;">Total Inscritos</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($datos['lista_cursos_inscritos'] as $cursoDetalle)
+                                                <tr>
+                                                    <td style="padding: 0.5rem; border: 1px solid var(--border);">{{ $cursoDetalle->codigo ?: 'N/A' }}</td>
+                                                    <td style="padding: 0.5rem; border: 1px solid var(--border);">{{ $cursoDetalle->nombre }}</td>
+                                                    <td style="padding: 0.5rem; border: 1px solid var(--border);">{{ $cursoDetalle->dia }}</td>
+                                                    <td style="padding: 0.5rem; border: 1px solid var(--border);">{{ $cursoDetalle->rango_horas }}</td>
+                                                    <td style="padding: 0.5rem; border: 1px solid var(--border); text-align: center;">{{ $cursoDetalle->numero_horarios }}</td>
+                                                    <td style="padding: 0.5rem; border: 1px solid var(--border); text-align: center;">{{ $cursoDetalle->total_inscripciones }}</td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    @else
+                                        <p style="color: var(--muted-foreground);">No hay datos de cursos inscritos.</p>
+                                    @endif
+
+                                    <h4>Horarios Sin Cupos</h4>
+                                    @if(isset($datos['lista_horarios_sin_cupos']) && count($datos['lista_horarios_sin_cupos']) > 0)
+                                        <table style="width: 100%; border-collapse: collapse;">
+                                            <thead style="background: #f3f4f6;">
+                                                <tr>
+                                                    <th style="padding: 0.5rem; border: 1px solid var(--border); text-align: left;">Código</th>
+                                                    <th style="padding: 0.5rem; border: 1px solid var(--border); text-align: left;">Nombre Curso</th>
+                                                    <th style="padding: 0.5rem; border: 1px solid var(--border); text-align: left;">Profesor</th>
+                                                    <th style="padding: 0.5rem; border: 1px solid var(--border); text-align: left;">Día</th>
+                                                    <th style="padding: 0.5rem; border: 1px solid var(--border); text-align: left;">Rango de Horas</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($datos['lista_horarios_sin_cupos'] as $horarioSinCupo)
+                                                <tr>
+                                                    <td style="padding: 0.5rem; border: 1px solid var(--border);">{{ $horarioSinCupo->codigo }}</td>
+                                                    <td style="padding: 0.5rem; border: 1px solid var(--border);">{{ $horarioSinCupo->nombre_curso }}</td>
+                                                    <td style="padding: 0.5rem; border: 1px solid var(--border);">{{ $horarioSinCupo->profesor }}</td>
+                                                    <td style="padding: 0.5rem; border: 1px solid var(--border);">{{ $horarioSinCupo->dia }}</td>
+                                                    <td style="padding: 0.5rem; border: 1px solid var(--border);">{{ $horarioSinCupo->rango_horas }}</td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    @else
+                                        <p style="color: var(--muted-foreground);">No hay horarios sin cupos.</p>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
                     @endforeach
                 </div>
 
@@ -428,10 +504,17 @@
                 ],
                 scrollX: true,
                 language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
                 }
             });
         });
+
+        function openDetailsModal(id) {
+            document.getElementById('detailsModal_' + id).style.display = 'flex';
+        }
+        function closeDetailsModal(id) {
+            document.getElementById('detailsModal_' + id).style.display = 'none';
+        }
     </script>
 </body>
 </html>

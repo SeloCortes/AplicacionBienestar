@@ -88,6 +88,12 @@
                 </section>
 
                 {{-- Filter Tabs --}}
+                @if(isset($inscripcionesAbiertas) && !$inscripcionesAbiertas)
+                <div style="background: #fee2e2; color: #b91c1c; padding: 1rem; border-radius: var(--radius-md); text-align: center; margin-bottom: 2rem; font-weight: 600; border: 1px solid #fca5a5;">
+                    Las inscripciones y cancelaciones se encuentran cerradas en este momento.
+                </div>
+                @endif
+                
                 <div class="filter-tabs" role="tablist">
                     <button type="button" data-filter="all" class="filter-btn active" role="tab" aria-selected="true">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -337,6 +343,7 @@
     <script>
         // Pasar inscripciones del usuario a JS
         const userInscriptions = @json($userInscriptions);
+        const inscripcionesAbiertas = @json($inscripcionesAbiertas ?? true);
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     {{-- Driver.js Script --}}
@@ -579,13 +586,18 @@
                             buttonHtml = `
                                 <button type="button" 
                                         class="btn-desinscribir-horario" 
-                                        data-inscripcion-id="${userEnrollment.id}">
+                                        data-inscripcion-id="${userEnrollment.id}"
+                                        ${!inscripcionesAbiertas ? 'disabled style="opacity:0.5;cursor:not-allowed;" title="Cancelaciones cerradas"' : ''}>
                                     Desinscribirme
                                 </button>
                             `;
                         } else {
                             let disabledReason = '';
-                            if (isFull) {
+                            if (!inscripcionesAbiertas) {
+                                disabledReason = 'Inscripciones cerradas';
+                            } else if (h.activo == 0 || h.activo === false || h.activo === "0") {
+                                disabledReason = 'Horario cerrado';
+                            } else if (isFull) {
                                 disabledReason = 'Agotado';
                             } else if (enrollmentInCategory) {
                                 disabledReason = `Inscrito en otro horario`;

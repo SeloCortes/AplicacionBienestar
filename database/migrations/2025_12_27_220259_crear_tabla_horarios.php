@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('hora_fin', 5);
             $table->string('profesor');
             $table->string('salon', 100)->nullable();
+            $table->string('codigo', 20)->unique()->nullable();
             $table->integer('cupo_maximo_estudiante');
             $table->integer('cupo_disponible_estudiante');
             $table->integer('cupo_maximo_tercero');

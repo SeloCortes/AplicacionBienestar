@@ -16,7 +16,7 @@ return new class extends Migration
 
             $table->id();
             $table->foreignId('usuario_id')->constrained('users')->cascadeOnDelete();
-            $table->string('area');
+            $table->enum('area', ['Deporte formativo', 'Arte y cultura', 'Catedra Santiaguina', 'Bienestar Universitario', 'Sistemas']);
             $table->string('rol');
             $table->timestamps();
         });

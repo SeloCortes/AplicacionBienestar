@@ -110,10 +110,17 @@
                 <nav class="admin-nav" style="display: flex; gap: 1.5rem; margin-left: 2rem;">
                     <a href="{{ route('admin.cursos.index') }}"
                         class="nav-link {{ request()->routeIs('admin.cursos.index') ? 'active' : '' }}"
-                        style="text-decoration: none; color: var(--primary); font-weight: 700; border-bottom: 2px solid var(--primary); padding-bottom: 4px;">Cursos</a>
+                        style="text-decoration: none; color: {{ request()->routeIs('admin.cursos.index') ? 'var(--primary)' : 'var(--muted-foreground)' }}; font-weight: {{ request()->routeIs('admin.cursos.index') ? '700' : '500' }}; {{ request()->routeIs('admin.cursos.index') ? 'border-bottom: 2px solid var(--primary); padding-bottom: 4px;' : 'transition: all 0.2s;' }}">Cursos</a>
+                    
                     <a href="{{ route('admin.informe.index') }}"
                         class="nav-link {{ request()->routeIs('admin.informe.index') ? 'active' : '' }}"
-                        style="text-decoration: none; color: var(--muted-foreground); font-weight: 500; transition: all 0.2s;">Informes</a>
+                        style="text-decoration: none; color: {{ request()->routeIs('admin.informe.index') ? 'var(--primary)' : 'var(--muted-foreground)' }}; font-weight: {{ request()->routeIs('admin.informe.index') ? '700' : '500' }}; {{ request()->routeIs('admin.informe.index') ? 'border-bottom: 2px solid var(--primary); padding-bottom: 4px;' : 'transition: all 0.2s;' }}">Informes</a>
+
+                    @if(in_array(auth()->user()->administrativo->area ?? '', ['Bienestar Universitario', 'Sistemas']))
+                    <a href="{{ route('admin.configuracion.index') }}"
+                        class="nav-link {{ request()->routeIs('admin.configuracion.index') ? 'active' : '' }}"
+                        style="text-decoration: none; color: {{ request()->routeIs('admin.configuracion.index') ? 'var(--primary)' : 'var(--muted-foreground)' }}; font-weight: {{ request()->routeIs('admin.configuracion.index') ? '700' : '500' }}; {{ request()->routeIs('admin.configuracion.index') ? 'border-bottom: 2px solid var(--primary); padding-bottom: 4px;' : 'transition: all 0.2s;' }}">Configuración</a>
+                    @endif
                 </nav>
 
                 <div class="header-actions">
@@ -155,6 +162,9 @@
                     @endphp
 
                     @foreach ($grupos as $categoria => $config)
+                        @if (!in_array($categoria, $tiposDeCursosPermitidos))
+                            @continue
+                        @endif
                         <section class="course-section">
                             <header class="section-header">
                                 <h2 class="section-title">{{ $categoria }}</h2>
@@ -226,9 +236,9 @@
                 <div class="modal-form-group">
                     <label>Categoría</label>
                     <select name="tipo_curso" required>
-                        <option value="Deporte formativo">Deporte formativo</option>
-                        <option value="Arte y cultura">Arte y cultura</option>
-                        <option value="Catedra Santiaguina">Catedra Santiaguina</option>
+                        @if(in_array('Deporte formativo', $tiposDeCursosPermitidos)) <option value="Deporte formativo">Deporte formativo</option> @endif
+                        @if(in_array('Arte y cultura', $tiposDeCursosPermitidos)) <option value="Arte y cultura">Arte y cultura</option> @endif
+                        @if(in_array('Catedra Santiaguina', $tiposDeCursosPermitidos)) <option value="Catedra Santiaguina">Catedra Santiaguina</option> @endif
                     </select>
                 </div>
                 <div class="modal-form-group">
@@ -279,9 +289,9 @@
                 <div class="modal-form-group">
                     <label>Categoría</label>
                     <select name="tipo_curso" id="editTipoCurso" required>
-                        <option value="Deporte formativo">Deporte formativo</option>
-                        <option value="Arte y cultura">Arte y cultura</option>
-                        <option value="Catedra Santiaguina">Catedra Santiaguina</option>
+                        @if(in_array('Deporte formativo', $tiposDeCursosPermitidos)) <option value="Deporte formativo">Deporte formativo</option> @endif
+                        @if(in_array('Arte y cultura', $tiposDeCursosPermitidos)) <option value="Arte y cultura">Arte y cultura</option> @endif
+                        @if(in_array('Catedra Santiaguina', $tiposDeCursosPermitidos)) <option value="Catedra Santiaguina">Catedra Santiaguina</option> @endif
                     </select>
                 </div>
                 <div class="modal-form-group">
@@ -332,10 +342,9 @@
                                 <option>Viernes</option>
                                 <option>Sábado</option>
                             </select></div>
-                        <div class="modal-form-group"><label>Profesor</label><input type="text" name="profesor"
-                                placeholder="Nombre prof."></div>
-                        <div class="modal-form-group"><label>Hora Inicio</label><input type="time" name="hora_inicio">
-                        </div>
+                        <div class="modal-form-group"><label>Profesor</label><input type="text" name="profesor" placeholder="Nombre prof."></div>
+                        <div class="modal-form-group"><label>Código de Horario</label><input type="text" name="codigo" placeholder="Autogenerado si está vacío"></div>
+                        <div class="modal-form-group"><label>Hora Inicio</label><input type="time" name="hora_inicio"></div>
                         <div class="modal-form-group"><label>Hora Fin</label><input type="time" name="hora_fin"></div>
                         <div class="modal-form-group"><label>Salón</label><input type="text" name="salon"
                                 placeholder="Ej: Salón 1"></div>
@@ -373,11 +382,18 @@
                             <option>Jueves</option><option>Viernes</option><option>Sábado</option>
                         </select></div>
                     <div class="modal-form-group"><label>Profesor</label><input type="text" name="profesor" id="editHorarioProfesor"></div>
+                    <div class="modal-form-group"><label>Código</label><input type="text" name="codigo" id="editHorarioCodigo"></div>
                     <div class="modal-form-group"><label>Hora Inicio</label><input type="time" name="hora_inicio" id="editHorarioHoraInicio"></div>
                     <div class="modal-form-group"><label>Hora Fin</label><input type="time" name="hora_fin" id="editHorarioHoraFin"></div>
                     <div class="modal-form-group"><label>Salón</label><input type="text" name="salon" id="editHorarioSalon"></div>
-                    <div class="modal-form-group"><label>Cupo Estudiantes</label><input type="number" name="cupo_maximo_estudiante" id="editHorarioCupoEst"></div>
-                    <div class="modal-form-group"><label>Cupo Terceros</label><input type="number" name="cupo_maximo_tercero" id="editHorarioCupoTer"></div>
+                    <div class="modal-form-group"><label>Estado</label>
+                        <select name="activo" id="editHorarioActivo">
+                            <option value="1">Activo</option>
+                            <option value="0">Inactivo</option>
+                        </select>
+                    </div>
+                    <div class="modal-form-group"><label>Cupo Est.</label><input type="number" name="cupo_maximo_estudiante" id="editHorarioCupoEst"></div>
+                    <div class="modal-form-group"><label>Cupo Ter.</label><input type="number" name="cupo_maximo_tercero" id="editHorarioCupoTer"></div>
                     <button type="submit" class="btn-inscribir-horario" style="grid-column: span 2;">Actualizar Horario</button>
                 </form>
             </div>
@@ -452,7 +468,12 @@
                 div.className = 'horario-item horario-admin-item';
                 div.innerHTML = `
                     <div class="horario-info">
-                        <div class="horario-day-time"><span>${h.dia}</span> | <span>${h.hora_inicio.substring(0, 5)} - ${h.hora_fin.substring(0, 5)}</span></div>
+                        <div class="horario-day-time">
+                            <span style="font-weight:700; color:var(--primary)">${h.codigo || ''}</span> | 
+                            <span>${h.dia}</span> | 
+                            <span>${h.hora_inicio.substring(0, 5)} - ${h.hora_fin.substring(0, 5)}</span>
+                            ${h.activo ? '<span style="color:green; font-size:0.75em; margin-left:10px;">(Activo)</span>' : '<span style="color:red; font-size:0.75em; margin-left:10px;">(Inactivo)</span>'}
+                        </div>
                         <div class="horario-profesor">Salón: ${h.salon || 'N/A'} • Prof. ${h.profesor || 'N/A'}</div>
                         <div class="horario-profesor" style="font-size: 0.75rem; color: var(--muted-foreground);">Est: ${h.cupo_disponible_estudiante}/${h.cupo_maximo_estudiante} | Ter: ${h.cupo_disponible_tercero}/${h.cupo_maximo_tercero}</div>
                     </div>
@@ -521,9 +542,11 @@
             document.getElementById('editHorarioCursoId').value = horario.curso_id;
             document.getElementById('editHorarioDia').value = horario.dia;
             document.getElementById('editHorarioProfesor').value = horario.profesor || '';
+            document.getElementById('editHorarioCodigo').value = horario.codigo || '';
             document.getElementById('editHorarioHoraInicio').value = horario.hora_inicio.substring(0, 5);
             document.getElementById('editHorarioHoraFin').value = horario.hora_fin.substring(0, 5);
             document.getElementById('editHorarioSalon').value = horario.salon || '';
+            document.getElementById('editHorarioActivo').value = horario.activo ? "1" : "0";
             document.getElementById('editHorarioCupoEst').value = horario.cupo_maximo_estudiante;
             document.getElementById('editHorarioCupoTer').value = horario.cupo_maximo_tercero;
             document.getElementById('editHorarioModal').style.display = 'flex';

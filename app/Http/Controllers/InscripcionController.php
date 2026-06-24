@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Horario;
 use App\Models\Inscripcion;
+use App\Models\Configuracion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
@@ -17,6 +18,23 @@ class InscripcionController extends Controller
         $request->validate([
             'horario_id' => 'required|exists:horarios,id',
         ]);
+
+        // Validar Estado Global de Inscripciones
+        $estadoGlobal = Configuracion::where('clave', 'estado_global_inscripciones')->value('valor');
+        if ($estadoGlobal === 'inactivo') {
+            return response()->json(['message' => 'El sistema de inscripciones se encuentra globalmente desactivado.'], 400);
+        }
+
+        $fechaInicio = Configuracion::where('clave', 'fecha_inicio_inscripciones')->value('valor');
+        $fechaFin = Configuracion::where('clave', 'fecha_fin_inscripciones')->value('valor');
+        $ahora = now();
+
+        if ($fechaInicio && $ahora->lt(\Carbon\Carbon::parse($fechaInicio))) {
+            return response()->json(['message' => 'El periodo de inscripciones aún no ha comenzado.'], 400);
+        }
+        if ($fechaFin && $ahora->gt(\Carbon\Carbon::parse($fechaFin))) {
+            return response()->json(['message' => 'El periodo de inscripciones ya ha finalizado.'], 400);
+        }
 
         $user = auth()->user();
         $limiterKey = 'inscripcion-accion-' . $user->id;
@@ -105,6 +123,23 @@ class InscripcionController extends Controller
     {
         $userId = auth()->user()->id;
         $limiterKey = 'inscripcion-accion-' . $userId;
+
+        // Validar Estado Global de Inscripciones para Cancelar
+        $estadoGlobal = Configuracion::where('clave', 'estado_global_inscripciones')->value('valor');
+        if ($estadoGlobal === 'inactivo') {
+            return response()->json(['message' => 'El sistema de inscripciones se encuentra globalmente desactivado.'], 400);
+        }
+
+        $fechaInicio = Configuracion::where('clave', 'fecha_inicio_inscripciones')->value('valor');
+        $fechaFin = Configuracion::where('clave', 'fecha_fin_inscripciones')->value('valor');
+        $ahora = now();
+
+        if ($fechaInicio && $ahora->lt(\Carbon\Carbon::parse($fechaInicio))) {
+            return response()->json(['message' => 'El periodo de cancelaciones aún no ha comenzado.'], 400);
+        }
+        if ($fechaFin && $ahora->gt(\Carbon\Carbon::parse($fechaFin))) {
+            return response()->json(['message' => 'El periodo de cancelaciones ya ha finalizado.'], 400);
+        }
 
         // Validacion de tiempo de espera (1 minuto) antes de borrar usando RateLimiter
         if (RateLimiter::tooManyAttempts($limiterKey, 1)) {

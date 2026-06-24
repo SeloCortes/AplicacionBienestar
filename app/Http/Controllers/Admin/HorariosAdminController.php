@@ -4,13 +4,41 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Horario;
+use App\Models\Curso;
 use Illuminate\Http\Request;
 
 class HorariosAdminController extends Controller
 {
     public function store(Request $request)
     {
-        $horario = Horario::create($request->all());
+        $data = $request->all();
+
+        if (empty($data['codigo'])) {
+            $curso = Curso::findOrFail($data['curso_id']);
+            $codigoBase = $curso->codigo;
+            
+            if ($codigoBase) {
+                $ultimoHorario = Horario::where('curso_id', $curso->id)
+                                        ->where('codigo', 'like', $codigoBase . '%')
+                                        ->orderBy('id', 'desc')
+                                        ->first();
+                                        
+                if ($ultimoHorario && $ultimoHorario->codigo) {
+                    $suffix = substr($ultimoHorario->codigo, strlen($codigoBase));
+                    if (empty($suffix) || !preg_match('/^[A-Z]+$/', $suffix)) {
+                        $suffix = 'A';
+                    } else {
+                        $suffix++; 
+                    }
+                } else {
+                    $suffix = 'A';
+                }
+                
+                $data['codigo'] = $codigoBase . $suffix;
+            }
+        }
+
+        $horario = Horario::create($data);
 
         return response()->json($horario, 201);
     }

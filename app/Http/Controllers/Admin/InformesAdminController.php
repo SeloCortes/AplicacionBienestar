@@ -22,8 +22,23 @@ class InformesAdminController extends Controller
         $facultad = $request->input('facultad', 'todos');
         $programa = $request->input('programa', 'todos');
 
-        // 1. Estadísticas globales agrupadas por los 3 tipos de cursos
-        $tiposDeCursos = ['Deporte formativo', 'Arte y cultura', 'Catedra Santiaguina'];
+        // Filtrar los tipos de curso según el área del administrador
+        $user = auth()->user();
+        $area = $user->administrativo->area ?? '';
+
+        $areaMap = [
+            'Deporte Formativo' => 'Deporte formativo',
+            'Arte y Cultura' => 'Arte y cultura',
+            'Cátedra Santiaguina' => 'Catedra Santiaguina'
+        ];
+        $tipoCursoFiltrado = $areaMap[$area] ?? $area;
+
+        if (in_array($area, ['Bienestar Universitario', 'Sistemas'])) {
+            $tiposDeCursos = ['Deporte formativo', 'Arte y cultura', 'Catedra Santiaguina'];
+        } else {
+            $tiposDeCursos = [$tipoCursoFiltrado];
+        }
+
         $estadisticas = [];
 
         foreach ($tiposDeCursos as $tipo) {
@@ -51,11 +66,66 @@ class InformesAdminController extends Controller
                 ->pluck('total', 'facultad')
                 ->toArray();
 
+            // Lista de cursos inscritos para el modal
+            $listaCursosInscritos = DB::table('inscripciones')
+                ->join('horarios', 'inscripciones.horario_id', '=', 'horarios.id')
+                ->join('cursos', 'horarios.curso_id', '=', 'cursos.id')
+                ->where('cursos.tipo_curso', $tipo)
+                ->select(
+                    'cursos.codigo as codigo',
+                    'cursos.nombre as nombre',
+                    'horarios.dia as dia',
+                    'horarios.hora_inicio',
+                    'horarios.hora_fin',
+                    DB::raw('count(inscripciones.id) as total_inscripciones')
+                )
+                ->groupBy('cursos.codigo', 'cursos.nombre', 'horarios.dia', 'horarios.hora_inicio', 'horarios.hora_fin')
+                ->get()
+                ->map(function ($item) {
+                    $item->rango_horas = $item->hora_inicio . ' - ' . $item->hora_fin;
+                    return $item;
+                });
+            // Pre-calcular la cuenta de horarios por curso y día para evitar el problema N+1
+            $conteoHorarios = DB::table('horarios')
+                ->join('cursos', 'horarios.curso_id', '=', 'cursos.id')
+                ->where('cursos.tipo_curso', $tipo)
+                ->select('cursos.codigo', 'horarios.dia', DB::raw('count(*) as count'))
+                ->groupBy('cursos.codigo', 'horarios.dia')
+                ->get()
+                ->keyBy(function($item) {
+                    return $item->codigo . '-' . $item->dia;
+                });
+
+            // Añadir cuenta de horarios a cada item
+            foreach ($listaCursosInscritos as $item) {
+                $key = $item->codigo . '-' . $item->dia;
+                $item->numero_horarios = isset($conteoHorarios[$key]) ? $conteoHorarios[$key]->count : 0;
+            }
+
+            // Lista de horarios sin cupos para el modal
+            $listaHorariosSinCupos = Horario::with('curso')->whereHas('curso', function($q) use ($tipo) {
+                $q->where('tipo_curso', $tipo);
+            })
+            ->where('cupo_disponible_estudiante', '<=', 0)
+            ->where('cupo_disponible_tercero', '<=', 0)
+            ->get()
+            ->map(function ($horario) {
+                return (object)[
+                    'codigo' => $horario->codigo ?? 'N/A',
+                    'nombre_curso' => $horario->curso->nombre,
+                    'profesor' => $horario->profesor,
+                    'dia' => $horario->dia,
+                    'rango_horas' => $horario->hora_inicio . ' - ' . $horario->hora_fin
+                ];
+            });
+
             $estadisticas[$tipo] = [
                 'cursos' => $numCursos,
                 'horarios' => $numHorarios,
                 'horarios_llenos' => $horariosLlenos,
                 'por_facultad' => $porFacultad,
+                'lista_cursos_inscritos' => $listaCursosInscritos,
+                'lista_horarios_sin_cupos' => $listaHorariosSinCupos,
             ];
         }
 

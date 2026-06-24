@@ -10,11 +10,25 @@ class CursosAdminController extends Controller
 {
     public function index()
     {
-        // Query para obtener todos los cursos.
-        $cursos = Curso::all();
+        $user = auth()->user();
+        $area = $user->administrativo->area ?? '';
 
-        // Retornar la vista con la lista de cursos
-        return view('administrador.adminCursos', compact('cursos'));
+        $areaMap = [
+            'Deporte Formativo' => 'Deporte formativo',
+            'Arte y Cultura' => 'Arte y cultura',
+            'Cátedra Santiaguina' => 'Catedra Santiaguina'
+        ];
+        $tipoCursoFiltrado = $areaMap[$area] ?? $area;
+
+        if (in_array($area, ['Bienestar Universitario', 'Sistemas'])) {
+            $cursos = Curso::all();
+            $tiposDeCursosPermitidos = ['Deporte formativo', 'Arte y cultura', 'Catedra Santiaguina'];
+        } else {
+            $cursos = Curso::where('tipo_curso', $tipoCursoFiltrado)->get();
+            $tiposDeCursosPermitidos = [$tipoCursoFiltrado];
+        }
+
+        return view('administrador.adminCursos', compact('cursos', 'tiposDeCursosPermitidos'));
     }
 
     public function store(Request $request)
