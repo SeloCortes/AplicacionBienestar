@@ -48,7 +48,7 @@
             <div class="header-inner">
                 <div class="logo-link">
                     <div class="logo-text">
-                        <span class="logo-title">Bienestar USC</span>
+                        <span class="logo-title">SISTEMA DE INSCRIPCION DE BIENESTAR UNIVERSITARIO - SIBIU</span>
                         <span class="logo-subtitle">Panel Administrativo</span>
                     </div>
                 </div>

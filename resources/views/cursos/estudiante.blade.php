@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#3d8b7a">
-    <title>Bienestar USC - Cursos</title>
+    <title>SISTEMA DE INSCRIPCION DE BIENESTAR UNIVERSITARIO - SIBIU - Cursos</title>
     {{-- SweetAlert2 --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="{{ asset('css/student.css') }}">
@@ -31,7 +31,7 @@
                         <img src="{{ asset('images/Logo_Universidad-Santiago-de-Cali.png') }}" alt="Logo USC">
                     </div>
                     <div class="logo-text">
-                        <span class="logo-title">SIBIU</span>
+                        <span class="logo-title">SISTEMA DE INSCRIPCION DE BIENESTAR UNIVERSITARIO - SIBIU</span>
                         <span class="logo-subtitle">Bienestar USC</span>
                     </div>
                 </a>

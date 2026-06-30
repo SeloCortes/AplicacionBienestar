@@ -102,7 +102,7 @@
                         <img src="{{ asset('images/Logo_Universidad-Santiago-de-Cali.png') }}" alt="Logo USC">
                     </div>
                     <div class="logo-text">
-                        <span class="logo-title">Bienestar USC</span>
+                        <span class="logo-title">SISTEMA DE INSCRIPCION DE BIENESTAR UNIVERSITARIO - SIBIU</span>
                         <span class="logo-subtitle">Panel Administrativo</span>
                     </div>
                 </div>
