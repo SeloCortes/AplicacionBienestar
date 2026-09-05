@@ -39,7 +39,7 @@ class InscripcionController extends Controller
         $user = auth()->user();
         $limiterKey = 'inscripcion-accion-' . $user->id;
 
-        // Validacion de tiempo de espera (1 minuto)
+        // Validacion de tiempo de espera (30 segundos)
         if (RateLimiter::tooManyAttempts($limiterKey, 1)) {
             $segundosRestantes = RateLimiter::availableIn($limiterKey);
             return response()->json([
@@ -110,8 +110,8 @@ class InscripcionController extends Controller
 
             $horario->decrement($cupoDisponibleCampo);
 
-            // Registrar la acción para bloquear futuras peticiones por 60 segundos
-            RateLimiter::hit($limiterKey, 60);
+            // Registrar la acción para bloquear futuras peticiones por 30 segundos
+            RateLimiter::hit($limiterKey, 30);
 
             return response()->json([
                 'message' => 'Inscripcion exitosa'
@@ -141,7 +141,7 @@ class InscripcionController extends Controller
             return response()->json(['message' => 'El periodo de cancelaciones ya ha finalizado.'], 400);
         }
 
-        // Validacion de tiempo de espera (1 minuto) antes de borrar usando RateLimiter
+        // Validacion de tiempo de espera (30 segundos) antes de borrar usando RateLimiter
         if (RateLimiter::tooManyAttempts($limiterKey, 1)) {
             $segundosRestantes = RateLimiter::availableIn($limiterKey);
             return response()->json([
@@ -170,8 +170,8 @@ class InscripcionController extends Controller
 
             $inscripcion->delete();
 
-            // Registrar la acción para bloquear futuras peticiones por 60 segundos
-            RateLimiter::hit($limiterKey, 60);
+            // Registrar la acción para bloquear futuras peticiones por 30 segundos
+            RateLimiter::hit($limiterKey, 30);
 
             return response()->json([
                 'message' => 'Inscripcion cancelada exitosamente'
